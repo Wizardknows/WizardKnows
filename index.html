@@ -1,135 +1,182 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Wizard Knows - Appliance Help</title>
+  <meta charset="UTF-8" />
+  <title>Wizard Knows – Appliance Help</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    html, body {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, html {
       height: 100%;
-      margin: 0;
-      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+
+    .page {
       display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      height: 100vh;
     }
-    header {
-      background: #0d6efd;
-      color: white;
-      padding: 16px;
-      text-align: center;
-    }
-    main {
-      flex: 1; /* takes remaining space above chat */
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 16px;
-      box-sizing: border-box;
-    }
-    h1 {
-      margin-top: 0;
-    }
-    .btn {
-      display: inline-block;
-      padding: 10px 16px;
-      background: #0d6efd;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      margin-top: 12px;
-    }
-    /* Chat section at the bottom, half screen height */
-    #chat-section {
-      height: 50vh; /* bottom half of the screen */
-      background: #ffffff;
-      border-top: 1px solid #ccc;
-      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+
+    .left, .right {
+      flex: 1;
+      border-left: 1px solid #ddd;
+      border-right: 1px solid #ddd;
       display: flex;
       flex-direction: column;
     }
-    #chat-header {
-      background:#0d6efd;
-      color:white;
-      padding:8px 12px;
-      font-weight:bold;
+
+    .left {
+      border-left: none;
     }
+
+    .right {
+      border-right: none;
+    }
+
+    .panel-header {
+      padding: 10px 12px;
+      background: #0d6efd;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow: auto;
+      padding: 10px;
+      background: #f7f7f7;
+    }
+
+    /* Chat widget fills the left panel */
+    #ai-widget {
+      height: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
     #ai-chat-log {
-      flex:1;
-      padding:8px;
-      overflow-y:auto;
-      font-size:14px;
+      flex: 1;
+      padding: 8px;
+      overflow-y: auto;
+      font-size: 14px;
     }
-    #chat-input-row {
-      display:flex;
-      border-top:1px solid #ddd;
+
+    #ai-widget-footer {
+      display: flex;
+      border-top: 1px solid #ddd;
     }
+
     #ai-user-input {
-      flex:1;
-      border:none;
-      padding:10px;
-      font-size:14px;
-      outline:none;
+      flex: 1;
+      border: none;
+      padding: 8px;
+      font-size: 14px;
+      outline: none;
     }
+
     #ai-send-btn {
-      border:none;
-      background:#0d6efd;
-      color:white;
-      padding:0 16px;
-      cursor:pointer;
-      font-size:14px;
+      border: none;
+      background: #0d6efd;
+      color: #fff;
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    #ai-send-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    /* Simple right panel placeholder */
+    .coming-soon {
+      height: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .coming-soon h2 {
+      margin-bottom: 8px;
+    }
+
+    .coming-soon p {
+      line-height: 1.4;
+    }
+
+    /* Responsive: stack on small screens */
+    @media (max-width: 800px) {
+      .page {
+        flex-direction: column;
+      }
+      .left, .right {
+        height: 50vh;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Wizard Knows</h1>
-    <p>Appliance repair guidance from an AI assistant + community forum.</p>
-  </header>
-
-  <!-- Top half: content / forum area -->
-  <main>
-    <h2>Appliance Help & Forum</h2>
-    <p>
-      Wizard Knows will help you troubleshoot common appliance problems and decide
-      when it's time to call a professional.
-    </p>
-    <p>
-      The bottom half of this page is your AI assistant. The top area will eventually
-      include a discussion forum where users can post questions, answers, and tips.
-    </p>
-    <h3>Forum (coming soon)</h3>
-    <p>
-      This is where the forum will live or be linked. For now, it's just placeholder text.
-    </p>
-    <a href="#" class="btn">Forum (coming soon)</a>
-  </main>
-
-  <!-- Bottom half: full-width chat -->
-  <section id="chat-section">
-    <div id="chat-header">
-      Appliance Repair Assistant
+  <div class="page">
+    <!-- LEFT: Chatbot -->
+    <div class="left">
+      <div class="panel-header">Wizard Knows – Appliance Repair Assistant</div>
+      <div class="panel-body">
+        <div id="ai-widget">
+          <div style="background:#0d6efd; color:white; padding:8px; border-radius:8px 8px 0 0;">
+            Chat with the Assistant
+          </div>
+          <div id="ai-chat-log">
+            <div><strong>Assistant:</strong> Hi! Describe your appliance problem. I’ll ask about your comfort level and tools and walk you through safe steps.</div>
+          </div>
+          <div id="ai-widget-footer">
+            <input
+              id="ai-user-input"
+              type="text"
+              placeholder="Type your question..."
+              autocomplete="off"
+            />
+            <button id="ai-send-btn">Send</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="ai-chat-log">
-      <div><strong>Assistant:</strong> Hi! Describe your appliance problem. I’ll ask about your comfort level and tools and walk you through safe steps.</div>
+    <!-- RIGHT: Discussion forum placeholder -->
+    <div class="right">
+      <div class="panel-header">Community Discussion (Coming Soon)</div>
+      <div class="panel-body">
+        <div class="coming-soon">
+          <h2>Community Forum Coming Soon</h2>
+          <p>
+            This area will host a discussion forum where you and other users can:
+          </p>
+          <ul>
+            <li>Share repair experiences</li>
+            <li>Ask follow-up questions</li>
+            <li>Discuss tricky appliance issues</li>
+          </ul>
+          <p>
+            For now, you can use the assistant on the left for one-on-one help.
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div id="chat-input-row">
-      <input id="ai-user-input"
-             type="text"
-             placeholder="Type your question...">
-      <button id="ai-send-btn">
-        Send
-      </button>
-    </div>
-  </section>
-
+  <!-- Chat JS -->
   <script>
-    const BACKEND_URL = 'http://localhost:3000/chat';
+    // Your live backend on Render:
+    const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
 
     const logEl = document.getElementById('ai-chat-log');
     const inputEl = document.getElementById('ai-user-input');
@@ -139,12 +186,18 @@
       const text = inputEl.value.trim();
       if (!text) return;
 
+      // Show user message
       const userDiv = document.createElement('div');
       userDiv.innerHTML = '<strong>You:</strong> ' + text;
       logEl.appendChild(userDiv);
       logEl.scrollTop = logEl.scrollHeight;
       inputEl.value = '';
+      inputEl.focus();
 
+      // Disable button while waiting
+      sendBtn.disabled = true;
+
+      // Call backend
       try {
         const res = await fetch(BACKEND_URL, {
           method: 'POST',
@@ -164,6 +217,8 @@
         errorDiv.innerHTML = '<strong>Assistant:</strong> There was an error contacting the server.';
         logEl.appendChild(errorDiv);
         logEl.scrollTop = logEl.scrollHeight;
+      } finally {
+        sendBtn.disabled = false;
       }
     }
 
