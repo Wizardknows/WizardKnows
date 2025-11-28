@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Wizard Knows - Appliance Help</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #0d6efd;
+      color: white;
+      padding: 16px;
+      text-align: center;
+    }
+    main {
+      flex: 1; /* takes remaining space above chat */
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      background: #0d6efd;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-top: 12px;
+    }
+    /* Chat section at the bottom, half screen height */
+    #chat-section {
+      height: 50vh; /* bottom half of the screen */
+      background: #ffffff;
+      border-top: 1px solid #ccc;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    #chat-header {
+      background:#0d6efd;
+      color:white;
+      padding:8px 12px;
+      font-weight:bold;
+    }
+    #ai-chat-log {
+      flex:1;
+      padding:8px;
+      overflow-y:auto;
+      font-size:14px;
+    }
+    #chat-input-row {
+      display:flex;
+      border-top:1px solid #ddd;
+    }
+    #ai-user-input {
+      flex:1;
+      border:none;
+      padding:10px;
+      font-size:14px;
+      outline:none;
+    }
+    #ai-send-btn {
+      border:none;
+      background:#0d6efd;
+      color:white;
+      padding:0 16px;
+      cursor:pointer;
+      font-size:14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Wizard Knows</h1>
+    <p>Appliance repair guidance from an AI assistant + community forum.</p>
+  </header>
+
+  <!-- Top half: content / forum area -->
+  <main>
+    <h2>Appliance Help & Forum</h2>
+    <p>
+      Wizard Knows will help you troubleshoot common appliance problems and decide
+      when it's time to call a professional.
+    </p>
+    <p>
+      The bottom half of this page is your AI assistant. The top area will eventually
+      include a discussion forum where users can post questions, answers, and tips.
+    </p>
+    <h3>Forum (coming soon)</h3>
+    <p>
+      This is where the forum will live or be linked. For now, it's just placeholder text.
+    </p>
+    <a href="#" class="btn">Forum (coming soon)</a>
+  </main>
+
+  <!-- Bottom half: full-width chat -->
+  <section id="chat-section">
+    <div id="chat-header">
+      Appliance Repair Assistant
+    </div>
+
+    <div id="ai-chat-log">
+      <div><strong>Assistant:</strong> Hi! Describe your appliance problem. I’ll ask about your comfort level and tools and walk you through safe steps.</div>
+    </div>
+
+    <div id="chat-input-row">
+      <input id="ai-user-input"
+             type="text"
+             placeholder="Type your question...">
+      <button id="ai-send-btn">
+        Send
+      </button>
+    </div>
+  </section>
+
+  <script>
+    const BACKEND_URL = 'http://localhost:3000/chat';
+
+    const logEl = document.getElementById('ai-chat-log');
+    const inputEl = document.getElementById('ai-user-input');
+    const sendBtn = document.getElementById('ai-send-btn');
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      const userDiv = document.createElement('div');
+      userDiv.innerHTML = '<strong>You:</strong> ' + text;
+      logEl.appendChild(userDiv);
+      logEl.scrollTop = logEl.scrollHeight;
+      inputEl.value = '';
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text }),
+        });
+
+        const data = await res.json();
+        const reply = data.reply || 'Sorry, I had trouble answering that.';
+
+        const aiDiv = document.createElement('div');
+        aiDiv.innerHTML = '<strong>Assistant:</strong> ' + reply;
+        logEl.appendChild(aiDiv);
+        logEl.scrollTop = logEl.scrollHeight;
+      } catch (err) {
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = '<strong>Assistant:</strong> There was an error contacting the server.';
+        logEl.appendChild(errorDiv);
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
