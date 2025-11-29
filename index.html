@@ -36,13 +36,13 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 16px;
+      align-items: stretch;      /* full width */
+      padding: 8px 12px;         /* small edge padding */
     }
 
     .main-container {
-      width: 100%;
-      max-width: 1100px;
+      width: 100%;               /* use full width */
+      max-width: none;           /* remove 1100px limit */
     }
 
     /* Top banner */
@@ -352,7 +352,6 @@
 
   <!-- Chat JS -->
   <script>
-    // Your live backend on Render:
     const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
 
     const logEl = document.getElementById('ai-chat-log');
