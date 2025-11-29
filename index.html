@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Wizard Knows – Appliance Help</title>
+  <title>Wizard Knows – Product Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -129,14 +129,14 @@
   <div class="page">
     <!-- LEFT: Chatbot -->
     <div class="left">
-      <div class="panel-header">Wizard Knows – Appliance Repair Assistant</div>
+      <div class="panel-header">Wizard Knows – Household Product Repair</div>
       <div class="panel-body">
         <div id="ai-widget">
           <div style="background:#0d6efd; color:white; padding:8px; border-radius:8px 8px 0 0;">
-            Chat with the Assistant
+            Chat with the Wizard
           </div>
           <div id="ai-chat-log">
-            <div><strong>Assistant:</strong> Hi! Describe your appliance problem. I’ll ask about your comfort level and tools and walk you through safe steps.</div>
+            <div><strong>Wizard:</strong> Hi! I’m the Wizard. Describe your product problem. I’ll start with simple no-tools checks based on what you see, hear, feel, and smell. Only if we need to go deeper will I ask about your comfort level and tools.</div>
           </div>
           <div id="ai-widget-footer">
             <input
@@ -161,12 +161,12 @@
             This area will host a discussion forum where you and other users can:
           </p>
           <ul>
-            <li>Share repair experiences</li>
+            <li>Share repair experiences with your products</li>
             <li>Ask follow-up questions</li>
-            <li>Discuss tricky appliance issues</li>
+            <li>Discuss tricky product issues</li>
           </ul>
           <p>
-            For now, you can use the assistant on the left for one-on-one help.
+            For now, you can use the Wizard on the left for one-on-one help.
           </p>
         </div>
       </div>
@@ -209,12 +209,12 @@
         const reply = data.reply || 'Sorry, I had trouble answering that.';
 
         const aiDiv = document.createElement('div');
-        aiDiv.innerHTML = '<strong>Assistant:</strong> ' + reply;
+        aiDiv.innerHTML = '<strong>Wizard:</strong> ' + reply;
         logEl.appendChild(aiDiv);
         logEl.scrollTop = logEl.scrollHeight;
       } catch (err) {
         const errorDiv = document.createElement('div');
-        errorDiv.innerHTML = '<strong>Assistant:</strong> There was an error contacting the server.';
+        errorDiv.innerHTML = '<strong>Wizard:</strong> There was an error contacting the server.';
         logEl.appendChild(errorDiv);
         logEl.scrollTop = logEl.scrollHeight;
       } finally {
