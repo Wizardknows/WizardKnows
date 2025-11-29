@@ -56,25 +56,27 @@
 
     .banner-inner {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
+      flex-direction: column;      /* icon above text */
+      align-items: center;        /* center horizontally */
+      justify-content: center;    /* center vertically in banner */
+      gap: 8px;
+      text-align: center;
     }
 
     .wizard-icon {
-      width: 40px;
-      height: 40px;
+      width: 80px;
+      height: 80px;
       border-radius: 999px;
       background: rgba(15, 23, 42, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 42px;
       flex-shrink: 0;
     }
 
     .brand-text h1 {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: 600;
       letter-spacing: 0.03em;
     }
