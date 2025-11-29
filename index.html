@@ -356,6 +356,15 @@
   <script>
     const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
 
+    // Unique ID per browser tab/session (for logging/grouping conversations)
+    const sessionId = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+
+    // Full conversation history for this chat
+    // Format expected by the backend/OpenAI: [{ role: "user"|"assistant", content: "..." }, ...]
+    let chatHistory = [];
+
     const logEl = document.getElementById('ai-chat-log');
     const inputEl = document.getElementById('ai-user-input');
     const sendBtn = document.getElementById('ai-send-btn');
@@ -380,7 +389,12 @@
       const text = inputEl.value.trim();
       if (!text) return;
 
+      // Show user message in UI
       appendMessage('You', text);
+
+      // Add user message to conversation history
+      chatHistory.push({ role: 'user', content: text });
+
       inputEl.value = '';
       inputEl.focus();
       sendBtn.disabled = true;
@@ -389,12 +403,21 @@
         const res = await fetch(BACKEND_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text }),
+          body: JSON.stringify({
+            message: text,
+            history: chatHistory,
+            sessionId: sessionId
+          }),
         });
 
         const data = await res.json();
         const reply = data.reply || 'Sorry, I had trouble answering that.';
+
+        // Show Wizard reply
         appendMessage('Wizard', reply);
+
+        // Add Wizard reply to conversation history
+        chatHistory.push({ role: 'assistant', content: reply });
       } catch (err) {
         appendMessage('Wizard', 'There was an error contacting the server.');
       } finally {

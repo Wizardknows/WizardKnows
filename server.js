@@ -184,22 +184,44 @@ ESCALATION
 - If the likely fault involves sealed system work, complex control board diagnosis beyond basic checks, or specialized tools the user does not have, recommend calling a technician.
 - If fixing the likely issue would require extensive disassembly, complex control board-level work, or other major teardown that is not reasonable for a typical homeowner, explain in simple terms what is likely wrong and recommend contacting a professional technician rather than walking them through a full teardown.
 - If the user expresses discomfort, confusion, or fear, simplify the steps and/or recommend professional service.
+
+CONVERSATION MEMORY
+- You are in a multi-turn conversation with the same user.
+- Use the previous messages in the conversation as context for your replies.
+- Do NOT ask the user to repeat the product type, brand, model, or symptoms they have already clearly given, unless you genuinely need clarification.
 `;
 
 // POST /chat endpoint
 app.post('/chat', async (req, res) => {
   try {
-    const userMessage = req.body.message || '';
+    const userMessage = (req.body.message || '').toString();
+    const history = Array.isArray(req.body.history) ? req.body.history : [];
+    const sessionId = (req.body.sessionId || 'no-session').toString();
+
+    // Build message list: system + full conversation history
+    // Front-end already includes the latest user message in history.
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...history,
+    ];
 
     const response = await client.chat.completions.create({
       model: 'gpt-4.1-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
-      ],
+      messages,
     });
 
     const answer = response.choices[0].message.content;
+
+    // Simple structured log for later analysis (view in Render logs)
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      sessionId,
+      lastUserMessage: userMessage,
+      assistantReply: answer,
+      historyLength: history.length,
+    };
+    console.log('CHAT_LOG', JSON.stringify(logEntry));
+
     res.json({ reply: answer });
   } catch (err) {
     console.error('Error in /chat handler:', err);
