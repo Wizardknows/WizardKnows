@@ -1,3 +1,16 @@
+// server.js
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const OpenAI = require('openai');
+
+const app = express();
+const port = process.env.PORT || 3000;
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+app.use(cors());
+app.use(express.json());
+
 const systemPrompt = `
 You are "Wizard Knows", a repair assistant for homeowners and technicians.
 
@@ -146,3 +159,33 @@ ESCALATION
 - If fixing the likely issue would require extensive disassembly, complex control board-level work, or other major teardown that is not reasonable for a typical homeowner, explain in simple terms what is likely wrong and recommend contacting a professional technician rather than walking them through a full teardown.
 - If the user expresses discomfort, confusion, or fear, simplify the steps and/or recommend professional service.
 `;
+
+// POST /chat endpoint
+app.post('/chat', async (req, res) => {
+  try {
+    const userMessage = req.body.message || '';
+
+    const response = await client.chat.completions.create({
+      model: 'gpt-4.1-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userMessage },
+      ],
+    });
+
+    const answer = response.choices[0].message.content;
+    res.json({ reply: answer });
+  } catch (err) {
+    console.error('Error in /chat handler:', err);
+    res.status(500).json({ error: 'Error talking to OpenAI' });
+  }
+});
+
+// Simple health check
+app.get('/', (req, res) => {
+  res.send('Wizard Knows backend is running');
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
