@@ -700,3 +700,355 @@
   </script>
 </body>
 </html>
+```
+
+---
+
+## 2. New `about.html` (About page, same hat logo)
+
+1. If `about.html` exists, open it:
+
+   ```bat
+   notepad about.html
+   ```
+
+2. Select all, delete, and paste this in:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>About - Wizard Knows</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #7c3aed 0%, #4c1d95 45%, #1e1633 100%);
+      color: #f9f5ff;
+    }
+
+    a {
+      color: #e9d5ff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 8px 12px 12px;
+    }
+
+    .main-container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* Top banner with logo and title */
+    .site-banner {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.96), rgba(147, 51, 234, 0.96));
+      border-radius: 20px;
+      padding: 14px 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.5);
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .banner-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .banner-title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* Home button */
+    .home-button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .home-button:hover {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    /* Logo styles (same hat as home page, slightly smaller) */
+    .wizard-logo-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .wizard-icon {
+      width: 110px;
+      height: 110px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, rgba(219, 234, 254, 0.55), rgba(15, 23, 42, 0.95));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 0 22px rgba(191, 219, 254, 0.9);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+    }
+
+    .wizard-logo-link:hover .wizard-icon {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 0 28px rgba(224, 231, 255, 1);
+    }
+
+    .wizard-logo-link::after {
+      content: "Back to Home";
+      position: absolute;
+      bottom: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .wizard-logo-link:hover::after {
+      opacity: 1;
+    }
+
+    .wizard-icon svg {
+      width: 96px;
+      height: 96px;
+      display: block;
+      overflow: visible;
+    }
+
+    /* Cards / content */
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 20px 18px 24px;
+      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.7);
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .card strong {
+      font-weight: 600;
+    }
+
+    .site-footer {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #e5e7eb;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 640px) {
+      .site-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Logo animations (same burst + stars as home) */
+    .wizard-icon svg .ring-burst {
+      transform-box: fill-box;
+      transform-origin: 60px 60px;
+      animation: ring-burst 4s ease-out infinite;
+    }
+
+    @keyframes ring-burst {
+      0%   { opacity: 0; transform: scale(0.7) rotate(0deg); }
+      20%  { opacity: 1; transform: scale(1.05) rotate(8deg); }
+      60%  { opacity: 0.6; transform: scale(1.2) rotate(0deg); }
+      100% { opacity: 0; transform: scale(1.35) rotate(-6deg); }
+    }
+
+    .wizard-icon svg .star {
+      fill: #facc15;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <div class="main-container">
+
+      <header class="site-banner">
+        <div class="banner-left">
+          <!-- Logo on About page, clickable back to Home -->
+          <a href="index.html" class="wizard-logo-link" title="Back to Home">
+            <div class="wizard-icon" aria-hidden="true">
+              <!-- Same hat logo as on Home, slightly smaller -->
+              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#e5edff"/>
+                    <stop offset="40%" stop-color="#60a5fa"/>
+                    <stop offset="100%" stop-color="#1d4ed8"/>
+                  </linearGradient>
+                  <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1e3a8a"/>
+                    <stop offset="100%" stop-color="#1d4ed8"/>
+                  </linearGradient>
+                </defs>
+
+                <circle cx="60" cy="60" r="54" fill="none"
+                        stroke="rgba(191,219,254,0.9)" stroke-width="2.8" />
+
+                <g class="ring-burst">
+                  <line x1="60" y1="4"  x2="60" y2="0"  stroke="#facc15" stroke-width="2" />
+                  <line x1="60" y1="116" x2="60" y2="120" stroke="#facc15" stroke-width="2" />
+                  <line x1="4"  y1="60" x2="0"  y2="60" stroke="#facc15" stroke-width="2" />
+                  <line x1="116" y1="60" x2="120" y2="60" stroke="#facc15" stroke-width="2" />
+                  <line x1="18" y1="18" x2="13" y2="13" stroke="#facc15" stroke-width="1.8" />
+                  <line x1="102" y1="18" x2="107" y2="13" stroke="#facc15" stroke-width="1.8" />
+                  <line x1="18" y1="102" x2="13" y2="107" stroke="#facc15" stroke-width="1.8" />
+                  <line x1="102" y1="102" x2="107" y2="107" stroke="#facc15" stroke-width="1.8" />
+                </g>
+
+                <ellipse cx="60" cy="82" rx="24" ry="7" fill="rgba(15,23,42,0.75)" />
+                <ellipse cx="60" cy="74" rx="30" ry="10" fill="url(#brimGradient)" />
+                <path
+                  d="M70 22
+                     C56 28, 48 42, 45 54
+                     C43.5 59, 43 63, 42.5 65.5
+                     L40 76
+                     L80 76
+                     L77 64
+                     C74.5 52, 73 42, 70 22Z"
+                  fill="url(#hatGradient)"
+                  stroke="#1d4ed8"
+                  stroke-width="1.3"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M54 36
+                     C51 42, 49 48.5, 48 55"
+                  fill="none"
+                  stroke="#bfdbfe"
+                  stroke-width="1.1"
+                  stroke-linecap="round"
+                  opacity="0.85"
+                />
+                <rect
+                  x="51"
+                  y="60"
+                  width="18"
+                  height="5"
+                  rx="2.5"
+                  fill="#facc15"
+                />
+                <circle cx="60" cy="62.5" r="2.1" fill="#fef9c3" />
+
+                <g fill="#facc15">
+                  <circle cx="52" cy="32" r="1.4" class="star" />
+                  <circle cx="68" cy="30" r="1.4" class="star" />
+                  <circle cx="64" cy="44" r="1.4" class="star" />
+                  <circle cx="56" cy="48" r="1.2" class="star" />
+                  <g class="star">
+                    <path d="M49 40 L50 38 L51 40 L53 41 L51 42 L50 44 L49 42 L47 41 Z" />
+                    <path d="M70 38 L71 36 L72 38 L74 39 L72 40 L71 42 L70 40 L68 39 Z" />
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </a>
+
+          <div class="banner-title">About WizardKnows</div>
+        </div>
+
+        <a href="index.html" class="home-button">&larr; Back to Home</a>
+      </header>
+
+      <main>
+        <section class="card">
+          <h2>About WizardKnows</h2>
+          <p>
+            Today's products don't last the way they used to. Most major appliances come with only a one-year warranty, and many start breaking down after just 5–6 years. We're expected to live with frequent failures, costly service calls, and a constant cycle of replacement. That's hard on our wallets, and even harder on the environment.
+          </p>
+          <p>
+            WizardKnows.com was created to push back against that cycle.
+          </p>
+          <p>
+            We help everyday DIYers and curious consumers understand how their appliances and household products actually work, and how to repair them when something goes wrong. Instead of sending a "broken" product straight to the curb, you can get clear explanations, troubleshooting guidance, and step-by-step help.
+          </p>
+          <p>
+            At the core of the site is Wizard, an AI-powered repair guide designed to turn confusing technical issues into plain language you can act on. Wizard helps you diagnose common problems, explore safe repair options, and decide when you can handle it yourself and when you truly need a professional.
+          </p>
+          <p>
+            Every time you repair instead of replace, you give an appliance a second life instead of a shallow grave. Most of these products will never be meaningfully recycled; they're buried, abandoned, or left to rust as wasted material. By keeping them working longer, we cut down on needless manufacturing, wasted money, and the constant flow of "junk" to landfills and empty lots.
+          </p>
+          <p>
+            Manufacturers often promote energy efficiency, but true sustainability also means durability, repairability, and honest information. WizardKnows stands with consumers who want products that work, last, and don't have to be thrown away so quickly.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Our Mission</h2>
+          <p>
+            To empower people to understand, maintain, and repair the products they own. Let's extend their lifespan, save money, and fight the throwaway culture that buries usable materials in landfills instead of keeping them in everyday use.
+          </p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        Contact us at <a href="mailto:wizardknows@outlook.com">wizardknows@outlook.com</a>
+      </footer>
+
+    </div>
+  </div>
+</body>
+</html>
