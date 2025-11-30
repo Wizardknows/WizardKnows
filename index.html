@@ -104,12 +104,11 @@
       }
     }
 
-    /* Clickable wrapper for logo */
-    .wizard-logo-link {
+    /* NON-clickable logo wrapper */
+    .wizard-logo-box {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      text-decoration: none;
       position: relative;
     }
 
@@ -126,39 +125,8 @@
       position: relative;
       overflow: visible;
       box-shadow: 0 0 26px rgba(191, 219, 254, 0.9);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      cursor: pointer;
     }
 
-    .wizard-logo-link:hover .wizard-icon {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 0 32px rgba(224, 231, 255, 1);
-    }
-
-    /* Small hover tooltip */
-    .wizard-logo-link::after {
-      content: "Click to learn about WizardKnows";
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-    }
-
-    .wizard-logo-link:hover::after {
-      opacity: 1;
-    }
-
-    /* Scale the inline SVG nicely inside the circle */
     .wizard-icon svg {
       width: 130px;
       height: 130px;
@@ -394,7 +362,7 @@
       }
     }
 
-    /* --- Logo SVG animations --- */
+    /* --- Hat SVG details --- */
 
     .wizard-icon svg .ring-burst {
       transform-box: fill-box;
@@ -424,8 +392,8 @@
       <!-- Top banner -->
       <header class="site-banner">
         <div class="banner-inner">
-          <!-- CLICKABLE LOGO -> About page -->
-          <a href="about.html" class="wizard-logo-link" title="About WizardKnows">
+          <!-- NON-clickable logo -->
+          <div class="wizard-logo-box">
             <div class="wizard-icon" aria-hidden="true">
               <!-- Logo: large wizard hat in a circle, with stars and burst -->
               <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -506,12 +474,10 @@
 
                 <!-- Yellow stars on the hat -->
                 <g fill="#facc15">
-                  <!-- small dots -->
                   <circle cx="52" cy="32" r="1.4" class="star" />
                   <circle cx="68" cy="30" r="1.4" class="star" />
                   <circle cx="64" cy="44" r="1.4" class="star" />
                   <circle cx="56" cy="48" r="1.2" class="star" />
-                  <!-- simple 4-point stars -->
                   <g class="star">
                     <path d="M49 40 L50 38 L51 40 L53 41 L51 42 L50 44 L49 42 L47 41 Z" />
                     <path d="M70 38 L71 36 L72 38 L74 39 L72 40 L71 42 L70 40 L68 39 Z" />
@@ -519,7 +485,7 @@
                 </g>
               </svg>
             </div>
-          </a>
+          </div>
 
           <div class="brand-text">
             <h1>Wizard Knows</h1>
