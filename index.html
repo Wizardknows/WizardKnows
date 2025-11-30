@@ -63,6 +63,7 @@
       text-align: center;
     }
 
+    /* Circular icon container with a CSS blue wizard hat (no image file) */
     .wizard-icon {
       width: 80px;
       height: 80px;
@@ -71,8 +72,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 42px;
       flex-shrink: 0;
+      position: relative;
+      overflow: visible;
+    }
+
+    .wizard-icon::before {
+      content: "";
+      position: absolute;
+      bottom: 28px;
+      width: 32px;
+      height: 24px;
+      background: #3b82f6; /* main hat color (blue) */
+      clip-path: polygon(50% 0, 0 100%, 100% 100%);
+      border-radius: 4px;
+    }
+
+    .wizard-icon::after {
+      content: "";
+      position: absolute;
+      bottom: 22px;
+      width: 46px;
+      height: 8px;
+      background: #1d4ed8; /* darker blue brim */
+      border-radius: 999px;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
     }
 
     .brand-text h1 {
@@ -144,6 +168,34 @@
       padding: 8px 12px;
       font-size: 0.95rem;
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Chat header wizard emoji */
+    .chat-wizard-icon {
+      font-size: 1.35rem;
+      transition:
+        transform 0.2s ease,
+        text-shadow 0.2s ease,
+        filter 0.2s ease;
+    }
+
+    /* Pulsing + glowing while thinking */
+    .chat-wizard-icon.thinking {
+      animation: wizard-pulse 0.8s ease-in-out infinite alternate;
+      text-shadow: 0 0 8px rgba(191, 219, 254, 0.9);
+      filter: brightness(1.2);
+    }
+
+    @keyframes wizard-pulse {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.15) translateY(-1px);
+      }
     }
 
     #ai-chat-log {
@@ -279,10 +331,10 @@
       <!-- Top banner -->
       <header class="site-banner">
         <div class="banner-inner">
-          <div class="wizard-icon">🧙</div>
+          <div class="wizard-icon" aria-hidden="true"></div>
           <div class="brand-text">
             <h1>Wizard Knows</h1>
-            <p>The Wizard knows! Guided DIY help for your home products.</p>
+            <p>The Wizard knows! Guided DIY help for all your home products.</p>
           </div>
         </div>
       </header>
@@ -296,7 +348,8 @@
             <div class="panel-body">
               <div id="ai-widget">
                 <div id="ai-widget-header">
-                  Chat with the Wizard
+                  <span class="chat-wizard-icon" aria-hidden="true">🧙</span>
+                  <span>Chat with the Wizard</span>
                 </div>
                 <div id="ai-chat-log">
                   <div class="msg msg-wizard">
@@ -368,6 +421,7 @@
     const logEl = document.getElementById('ai-chat-log');
     const inputEl = document.getElementById('ai-user-input');
     const sendBtn = document.getElementById('ai-send-btn');
+    const chatWizardIcon = document.querySelector('.chat-wizard-icon');
 
     function appendMessage(sender, text) {
       const msgDiv = document.createElement('div');
@@ -399,6 +453,11 @@
       inputEl.focus();
       sendBtn.disabled = true;
 
+      // Start thinking animation on the chat wizard icon
+      if (chatWizardIcon) {
+        chatWizardIcon.classList.add('thinking');
+      }
+
       try {
         const res = await fetch(BACKEND_URL, {
           method: 'POST',
@@ -422,6 +481,11 @@
         appendMessage('Wizard', 'There was an error contacting the server.');
       } finally {
         sendBtn.disabled = false;
+
+        // Stop thinking animation
+        if (chatWizardIcon) {
+          chatWizardIcon.classList.remove('thinking');
+        }
       }
     }
 
