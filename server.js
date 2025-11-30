@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -201,23 +203,110 @@ CONVERSATION MEMORY
 - Use the previous messages in the conversation as context for your replies.
 - Do NOT ask the user to repeat the product type, brand, model, or symptoms they have already clearly given, unless you genuinely need clarification.
 `;
+// --- Simple knowledge loading and matching ---
+
+const knowledge = {};
+
+// Load knowledge files at startup
+function loadKnowledge() {
+  const baseDir = path.join(__dirname, 'knowledge');
+
+  try {
+    const efDishPath = path.join(
+      baseDir,
+      'dishwasher',
+      'ef_polymer_tub_kinston_diagnostics.md'
+    );
+    knowledge.efPolymerKinston = fs.readFileSync(efDishPath, 'utf8');
+    console.log('Loaded Kinston dishwasher knowledge');
+  } catch (err) {
+    console.warn(
+      'Could not load Kinston dishwasher knowledge file:',
+      err.message
+    );
+  }
+}
+
+/**
+ * Decide which knowledge (if any) to attach, based on the message + recent history.
+ */
+function getRelevantKnowledge(userMessage, history) {
+  const textPieces = [];
+
+  if (typeof userMessage === 'string') {
+    textPieces.push(userMessage.toLowerCase());
+  }
+
+  if (Array.isArray(history)) {
+    const lastFew = history.slice(-6); // last few messages only
+    for (const m of lastFew) {
+      if (m && typeof m.content === 'string') {
+        textPieces.push(m.content.toLowerCase());
+      }
+    }
+  }
+
+  const text = textPieces.join(' ');
+
+  const mentionsDishwasher =
+    text.includes('dishwasher') || text.includes('dish washer');
+
+  const mentionsBrand =
+    text.includes('electrolux') ||
+    text.includes('frigidaire') ||
+    text.includes('gallery') ||
+    text.includes('professional series');
+
+  const mentionsPlatform =
+    text.includes('kinston') ||
+    text.includes('polymer tub') ||
+    text.includes('plastic tub');
+
+  if (
+    knowledge.efPolymerKinston &&
+    mentionsDishwasher &&
+    (mentionsBrand || mentionsPlatform)
+  ) {
+    return knowledge.efPolymerKinston;
+  }
+
+  return null;
+}
+
+// Load knowledge once at startup
+loadKnowledge();
 
 // POST /chat endpoint
 app.post('/chat', async (req, res) => {
   try {
     const userMessage = (req.body.message || '').toString();
-    const history = Array.isArray(req.body.history) ? req.body.history : [];
-    const sessionId = (req.body.sessionId || 'no-session').toString();
+  const history = Array.isArray(req.body.history) ? req.body.history : [];
+  const sessionId = (req.body.sessionId || 'no-session').toString();
 
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...history,
-    ];
+  // Decide if we should attach any knowledge
+  const extraKnowledge = getRelevantKnowledge(userMessage, history);
 
-    const response = await client.chat.completions.create({
-      model: 'gpt-4.1-mini',
-      messages,
+  // Build messages for OpenAI
+  const messages = [
+    { role: 'system', content: systemPrompt },
+  ];
+
+  if (extraKnowledge) {
+    messages.push({
+      role: 'system',
+      content:
+        "Internal reference for an Electrolux/Frigidaire polymer-tub dishwasher platform built in Kinston, NC. Use it only if it matches the user's product. Do NOT say you have this document; just use its details when relevant:\n\n" +
+        extraKnowledge,
     });
+  }
+
+  // Then append the existing conversation history (which already includes the latest user message)
+  messages.push(...history);
+
+  const response = await client.chat.completions.create({
+    model: 'gpt-4.1-mini',
+    messages,
+  });
 
     const answer = response.choices[0].message.content;
 
