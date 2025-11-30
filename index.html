@@ -59,11 +59,11 @@
       flex-direction: column;      /* icon above text */
       align-items: center;        /* center horizontally */
       justify-content: center;    /* center vertically in banner */
-      gap: 8px;
+      gap: 10px;
       text-align: center;
     }
 
-    /* Circular icon container with a CSS blue wizard hat (no image file) */
+    /* Circular icon container for the wizard hat */
     .wizard-icon {
       width: 80px;
       height: 80px;
@@ -74,41 +74,25 @@
       justify-content: center;
       flex-shrink: 0;
       position: relative;
-      overflow: visible;
+      overflow: hidden;
     }
 
-    .wizard-icon::before {
-      content: "";
-      position: absolute;
-      bottom: 28px;
-      width: 32px;
-      height: 24px;
-      background: #3b82f6; /* main hat color (blue) */
-      clip-path: polygon(50% 0, 0 100%, 100% 100%);
-      border-radius: 4px;
-    }
-
-    .wizard-icon::after {
-      content: "";
-      position: absolute;
-      bottom: 22px;
-      width: 46px;
-      height: 8px;
-      background: #1d4ed8; /* darker blue brim */
-      border-radius: 999px;
-      box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
+    /* Scale the inline SVG nicely inside the circle */
+    .wizard-icon svg {
+      width: 56px;
+      height: 56px;
     }
 
     .brand-text h1 {
-      font-size: 2rem;
+      font-size: 2.2rem;           /* slightly larger than before */
       font-weight: 600;
       letter-spacing: 0.03em;
     }
 
     .brand-text p {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       opacity: 0.9;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     /* Main content: two columns */
@@ -136,10 +120,11 @@
     }
 
     .panel-header {
-      padding: 10px 14px;
+      padding: 12px 16px;          /* slightly larger */
       background: rgba(31, 41, 55, 0.9);
       color: #e5e7eb;
       font-weight: 500;
+      font-size: 0.95rem;
       border-radius: 16px 16px 0 0;
       border-bottom: 1px solid rgba(148, 163, 184, 0.3);
     }
@@ -165,17 +150,21 @@
     #ai-widget-header {
       background: linear-gradient(135deg, #7c3aed, #8b5cf6);
       color: white;
-      padding: 8px 12px;
-      font-size: 0.95rem;
+      padding: 10px 14px;          /* slightly larger */
+      font-size: 1.05rem;          /* slightly larger */
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     /* Chat header wizard emoji */
     .chat-wizard-icon {
-      font-size: 1.35rem;
+      font-size: 1.7rem;           /* increased size */
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition:
         transform 0.2s ease,
         text-shadow 0.2s ease,
@@ -331,7 +320,46 @@
       <!-- Top banner -->
       <header class="site-banner">
         <div class="banner-inner">
-          <div class="wizard-icon" aria-hidden="true"></div>
+          <div class="wizard-icon" aria-hidden="true">
+            <!-- Inline SVG wizard hat icon -->
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <!-- Gradient for the main hat -->
+                <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#60a5fa"/>
+                  <stop offset="100%" stop-color="#1d4ed8"/>
+                </linearGradient>
+                <!-- Gradient for the brim -->
+                <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#1d4ed8"/>
+                  <stop offset="100%" stop-color="#1e40af"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Soft shadow under the brim -->
+              <ellipse cx="32" cy="52" rx="18" ry="6" fill="rgba(15,23,42,0.65)"/>
+
+              <!-- Hat brim -->
+              <ellipse cx="32" cy="47" rx="20" ry="7" fill="url(#brimGradient)"/>
+
+              <!-- Main hat cone -->
+              <path d="M32 10
+                       C26 18, 22 26, 20 36
+                       L18 44
+                       L46 44
+                       L44 36
+                       C42 26, 38 18, 32 10Z"
+                    fill="url(#hatGradient)"/>
+
+              <!-- Hat band -->
+              <rect x="24" y="34" width="16" height="4" rx="2" fill="#facc15"/>
+
+              <!-- Small star / sparkles -->
+              <circle cx="22" cy="20" r="1.4" fill="#e0f2fe"/>
+              <circle cx="42" cy="18" r="1.1" fill="#e0f2fe"/>
+              <circle cx="38" cy="26" r="1.0" fill="#e0f2fe"/>
+            </svg>
+          </div>
           <div class="brand-text">
             <h1>Wizard Knows</h1>
             <p>The Wizard knows! Guided DIY help for all your home products.</p>
@@ -355,7 +383,7 @@
                   <div class="msg msg-wizard">
                     <strong>Wizard</strong>
                     <div class="msg-bubble">
-                      Please describe your product's problem. The more detail you provide (what it does or doesn’t do, any noises, smells, lights, and error codes), the better I can assist you.
+                      Hi! I’m the Wizard. Describe your product problem. The more detail you provide (what it does or doesn’t do, any noises, smells, lights, and error codes), the better I can assist you.
                     </div>
                   </div>
                 </div>
