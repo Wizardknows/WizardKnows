@@ -32,67 +32,97 @@
       text-decoration: underline;
     }
 
+    /* Lightning overlay that flashes over everything */
+    .lightning-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0;
+      /* Two bright spots at the top to mimic lightning glow */
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.9) 0, transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(227, 233, 255, 0.9) 0, transparent 50%);
+      mix-blend-mode: screen;
+    }
+
+    .lightning-overlay.flash {
+      animation: lightning-flash 0.45s ease-out;
+    }
+
+    @keyframes lightning-flash {
+      0%   { opacity: 0; }
+      12%  { opacity: 1; }
+      35%  { opacity: 0.25; }
+      55%  { opacity: 0.85; }
+      100% { opacity: 0; }
+    }
+
     .page-wrapper {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: stretch;      /* full width */
-      padding: 8px 12px;         /* small edge padding */
+      align-items: stretch;
+      padding: 8px 12px;
+      position: relative;
+      z-index: 100; /* ensure content sits above base background, but below overlay blend is fine */
     }
 
     .main-container {
-      width: 100%;               /* use full width */
-      max-width: none;           /* remove 1100px limit */
+      width: 100%;
+      max-width: none;
     }
 
     /* Top banner */
     .site-banner {
       background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(147, 51, 234, 0.95));
       border-radius: 16px;
-      padding: 16px 20px;
+      padding: 18px 22px;
       box-shadow: 0 14px 40px rgba(15, 23, 42, 0.4);
       margin-bottom: 16px;
     }
 
     .banner-inner {
       display: flex;
-      flex-direction: column;      /* icon above text */
-      align-items: center;        /* center horizontally */
-      justify-content: center;    /* center vertically in banner */
-      gap: 10px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       text-align: center;
     }
 
     /* Circular icon container for the wizard hat */
     .wizard-icon {
-      width: 80px;
-      height: 80px;
+      width: 96px;
+      height: 96px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.35);
+      background: radial-gradient(circle at 30% 20%, rgba(219, 234, 254, 0.35), rgba(15, 23, 42, 0.9));
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 0 18px rgba(129, 140, 248, 0.7);
     }
 
     /* Scale the inline SVG nicely inside the circle */
     .wizard-icon svg {
-      width: 56px;
-      height: 56px;
+      width: 72px;
+      height: 72px;
+      display: block;
     }
 
     .brand-text h1 {
-      font-size: 2.2rem;           /* slightly larger than before */
+      font-size: 2.3rem;
       font-weight: 600;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
     }
 
     .brand-text p {
       font-size: 0.95rem;
       opacity: 0.9;
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
     /* Main content: two columns */
@@ -120,7 +150,7 @@
     }
 
     .panel-header {
-      padding: 12px 16px;          /* slightly larger */
+      padding: 12px 16px;
       background: rgba(31, 41, 55, 0.9);
       color: #e5e7eb;
       font-weight: 500;
@@ -150,8 +180,8 @@
     #ai-widget-header {
       background: linear-gradient(135deg, #7c3aed, #8b5cf6);
       color: white;
-      padding: 10px 14px;          /* slightly larger */
-      font-size: 1.05rem;          /* slightly larger */
+      padding: 12px 16px;
+      font-size: 1.08rem;
       font-weight: 500;
       display: flex;
       align-items: center;
@@ -160,7 +190,7 @@
 
     /* Chat header wizard emoji */
     .chat-wizard-icon {
-      font-size: 1.7rem;           /* increased size */
+      font-size: 2.1rem;  /* larger emoji */
       line-height: 1;
       display: inline-flex;
       align-items: center;
@@ -174,8 +204,8 @@
     /* Pulsing + glowing while thinking */
     .chat-wizard-icon.thinking {
       animation: wizard-pulse 0.8s ease-in-out infinite alternate;
-      text-shadow: 0 0 8px rgba(191, 219, 254, 0.9);
-      filter: brightness(1.2);
+      text-shadow: 0 0 10px rgba(191, 219, 254, 1);
+      filter: brightness(1.25);
     }
 
     @keyframes wizard-pulse {
@@ -183,7 +213,7 @@
         transform: scale(1);
       }
       to {
-        transform: scale(1.15) translateY(-1px);
+        transform: scale(1.2) translateY(-1px);
       }
     }
 
@@ -314,6 +344,9 @@
   </style>
 </head>
 <body>
+  <!-- Lightning effect overlay -->
+  <div class="lightning-overlay" aria-hidden="true"></div>
+
   <div class="page-wrapper">
     <div class="main-container">
 
@@ -321,43 +354,74 @@
       <header class="site-banner">
         <div class="banner-inner">
           <div class="wizard-icon" aria-hidden="true">
-            <!-- Inline SVG wizard hat icon -->
+            <!-- Improved inline SVG wizard hat icon -->
             <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <defs>
-                <!-- Gradient for the main hat -->
+                <!-- Main hat gradient -->
                 <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#60a5fa"/>
+                  <stop offset="0%" stop-color="#93c5fd"/>
+                  <stop offset="45%" stop-color="#3b82f6"/>
                   <stop offset="100%" stop-color="#1d4ed8"/>
                 </linearGradient>
-                <!-- Gradient for the brim -->
+                <!-- Brim gradient -->
                 <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stop-color="#1d4ed8"/>
                   <stop offset="100%" stop-color="#1e40af"/>
                 </linearGradient>
               </defs>
 
-              <!-- Soft shadow under the brim -->
-              <ellipse cx="32" cy="52" rx="18" ry="6" fill="rgba(15,23,42,0.65)"/>
+              <!-- Soft outer glow -->
+              <circle cx="32" cy="32" r="29" fill="none" stroke="rgba(191,219,254,0.22)" stroke-width="2"/>
 
-              <!-- Hat brim -->
-              <ellipse cx="32" cy="47" rx="20" ry="7" fill="url(#brimGradient)"/>
+              <!-- Shadow under brim -->
+              <ellipse cx="32" cy="49" rx="18" ry="5.5" fill="rgba(15,23,42,0.7)"/>
 
-              <!-- Main hat cone -->
-              <path d="M32 10
-                       C26 18, 22 26, 20 36
-                       L18 44
-                       L46 44
-                       L44 36
-                       C42 26, 38 18, 32 10Z"
-                    fill="url(#hatGradient)"/>
+              <!-- Brim -->
+              <ellipse cx="32" cy="44" rx="21" ry="7.5" fill="url(#brimGradient)"/>
+
+              <!-- Main hat cone (slightly tilted) -->
+              <path
+                d="M36 9
+                   C28 14, 23 24, 21 32
+                   C20 35, 19.5 38, 19 40
+                   L17 44
+                   L45 44
+                   L43 38
+                   C41 30, 39 22, 36 9Z"
+                fill="url(#hatGradient)"
+                stroke="#1d4ed8"
+                stroke-width="1.2"
+                stroke-linejoin="round"
+              />
+
+              <!-- Highlight on the left edge of the cone -->
+              <path
+                d="M28 19
+                   C25.5 24, 23.5 28.5, 22.5 33"
+                fill="none"
+                stroke="#bfdbfe"
+                stroke-width="1.1"
+                stroke-linecap="round"
+                opacity="0.8"
+              />
 
               <!-- Hat band -->
-              <rect x="24" y="34" width="16" height="4" rx="2" fill="#facc15"/>
+              <rect
+                x="24"
+                y="33.5"
+                width="16"
+                height="4.3"
+                rx="2.1"
+                fill="#facc15"
+              />
 
-              <!-- Small star / sparkles -->
-              <circle cx="22" cy="20" r="1.4" fill="#e0f2fe"/>
-              <circle cx="42" cy="18" r="1.1" fill="#e0f2fe"/>
-              <circle cx="38" cy="26" r="1.0" fill="#e0f2fe"/>
+              <!-- Small band gem -->
+              <circle cx="32" cy="35.5" r="1.7" fill="#fef9c3"/>
+
+              <!-- Sparkles -->
+              <circle cx="23" cy="17" r="1.5" fill="#e0f2fe"/>
+              <circle cx="42" cy="16" r="1.3" fill="#e0f2fe"/>
+              <circle cx="37" cy="24" r="1.2" fill="#e0f2fe"/>
             </svg>
           </div>
           <div class="brand-text">
@@ -433,7 +497,7 @@
     </div>
   </div>
 
-  <!-- Chat JS -->
+  <!-- Chat + lightning JS -->
   <script>
     const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
 
@@ -450,6 +514,7 @@
     const inputEl = document.getElementById('ai-user-input');
     const sendBtn = document.getElementById('ai-send-btn');
     const chatWizardIcon = document.querySelector('.chat-wizard-icon');
+    const lightningEl = document.querySelector('.lightning-overlay');
 
     function appendMessage(sender, text) {
       const msgDiv = document.createElement('div');
@@ -521,6 +586,32 @@
     inputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') sendMessage();
     });
+
+    // --- Lightning logic: flash at random intervals ---
+    function triggerLightning() {
+      if (!lightningEl) return;
+      lightningEl.classList.add('flash');
+      setTimeout(() => {
+        lightningEl.classList.remove('flash');
+      }, 500); // duration matches CSS animation length
+    }
+
+    function scheduleLightning() {
+      if (!lightningEl) return;
+
+      // Random delay between flashes: 15s – 45s
+      const minDelay = 15000;
+      const maxDelay = 45000;
+      const delay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+
+      setTimeout(() => {
+        triggerLightning();
+        scheduleLightning(); // schedule the next one
+      }, delay);
+    }
+
+    // Start lightning schedule after page load
+    scheduleLightning();
   </script>
 </body>
 </html>
