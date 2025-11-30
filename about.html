@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Wizard Knows - Product Help</title>
+  <title>About - Wizard Knows</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Google Font -->
@@ -32,91 +32,73 @@
       text-decoration: underline;
     }
 
-    /* Lightning overlay that flashes over everything */
-    .lightning-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 50;
-      opacity: 0;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.9) 0, transparent 55%),
-        radial-gradient(circle at 80% 0%, rgba(227, 233, 255, 0.9) 0, transparent 50%);
-      mix-blend-mode: screen;
-    }
-
-    .lightning-overlay.flash {
-      animation: lightning-flash 0.45s ease-out;
-    }
-
-    @keyframes lightning-flash {
-      0%   { opacity: 0; }
-      12%  { opacity: 1; }
-      35%  { opacity: 0.25; }
-      55%  { opacity: 0.85; }
-      100% { opacity: 0; }
-    }
-
     .page-wrapper {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: stretch;
       padding: 8px 12px 12px;
-      position: relative;
-      z-index: 100;
     }
 
     .main-container {
       width: 100%;
-      max-width: 1120px;
+      max-width: 960px;
       margin: 0 auto;
     }
 
-    /* Top banner */
+    /* Top banner with non-clickable logo */
     .site-banner {
       background: linear-gradient(135deg, rgba(124, 58, 237, 0.96), rgba(147, 51, 234, 0.96));
       border-radius: 20px;
-      padding: 18px 22px;
+      padding: 14px 18px;
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.5);
       margin-bottom: 18px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 18px;
+      gap: 12px;
     }
 
-    .banner-inner {
+    .banner-left {
       display: flex;
       align-items: center;
-      gap: 18px;
-      width: 100%;
+      gap: 12px;
     }
 
-    @media (max-width: 640px) {
-      .site-banner {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-      .banner-inner {
-        flex-direction: column;
-        align-items: center;
-      }
+    .banner-title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
     }
 
-    /* Clickable wrapper for logo */
-    .wizard-logo-link {
+    /* Back to Home button */
+    .home-button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .home-button:hover {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    /* Non-clickable logo wrapper */
+    .wizard-logo-box {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      text-decoration: none;
       position: relative;
     }
 
-    /* Circular icon container for the wizard hat */
     .wizard-icon {
-      width: 150px;
-      height: 150px;
+      width: 110px;
+      height: 110px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 20%, rgba(219, 234, 254, 0.55), rgba(15, 23, 42, 0.95));
       display: flex;
@@ -125,253 +107,40 @@
       flex-shrink: 0;
       position: relative;
       overflow: visible;
-      box-shadow: 0 0 26px rgba(191, 219, 254, 0.9);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      cursor: pointer;
+      box-shadow: 0 0 22px rgba(191, 219, 254, 0.9);
     }
 
-    .wizard-logo-link:hover .wizard-icon {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 0 32px rgba(224, 231, 255, 1);
-    }
-
-    /* Small hover tooltip */
-    .wizard-logo-link::after {
-      content: "Click to learn about WizardKnows";
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-    }
-
-    .wizard-logo-link:hover::after {
-      opacity: 1;
-    }
-
-    /* Scale the inline SVG nicely inside the circle */
     .wizard-icon svg {
-      width: 130px;
-      height: 130px;
+      width: 96px;
+      height: 96px;
       display: block;
       overflow: visible;
     }
 
-    .brand-text h1 {
-      font-size: 2.4rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-    }
-
-    .brand-text p {
-      font-size: 1rem;
-      opacity: 0.9;
-      margin-top: 4px;
-      max-width: 480px;
-    }
-
-    /* Main content: two columns */
-    .content-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .left, .right {
-      flex: 1;
-      min-width: 280px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel {
+    /* Cards / content */
+    .card {
       background: rgba(15, 23, 42, 0.9);
       border-radius: 16px;
+      padding: 20px 18px 24px;
       box-shadow: 0 10px 32px rgba(15, 23, 42, 0.7);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+      margin-bottom: 12px;
     }
 
-    .panel-header {
-      padding: 12px 16px;
-      background: rgba(31, 41, 55, 0.9);
-      color: #e5e7eb;
-      font-weight: 500;
-      font-size: 0.95rem;
-      border-radius: 16px 16px 0 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
-    }
-
-    .panel-body {
-      flex: 1;
-      overflow: auto;
-      padding: 10px;
-      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.18), rgba(15, 23, 42, 0.95));
-      border-radius: 0 0 16px 16px;
-    }
-
-    /* Chat widget fills the left panel */
-    #ai-widget {
-      height: 100%;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    #ai-widget-header {
-      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-      color: white;
-      padding: 12px 16px;
-      font-size: 1.08rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .chat-wizard-icon {
-      font-size: 2.1rem;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition:
-        transform 0.2s ease,
-        text-shadow 0.2s ease,
-        filter 0.2s ease;
-    }
-
-    .chat-wizard-icon.thinking {
-      animation: wizard-pulse 0.8s ease-in-out infinite alternate;
-      text-shadow: 0 0 10px rgba(191, 219, 254, 1);
-      filter: brightness(1.25);
-    }
-
-    @keyframes wizard-pulse {
-      from { transform: scale(1); }
-      to   { transform: scale(1.2) translateY(-1px); }
-    }
-
-    #ai-chat-log {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
-
-    .msg {
+    .card h2 {
+      font-size: 1.4rem;
       margin-bottom: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .msg strong {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-    .msg-bubble {
-      display: inline-block;
-      padding: 8px 10px;
-      border-radius: 10px;
-      max-width: 100%;
-      line-height: 1.4;
-    }
-    .msg-user .msg-bubble {
-      background: rgba(129, 140, 248, 0.9);
-      color: #0f172a;
-      align-self: flex-end;
-    }
-    .msg-wizard .msg-bubble {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: #e5e7eb;
-      align-self: flex-start;
     }
 
-    #ai-widget-footer {
-      display: flex;
-      border-top: 1px solid rgba(148, 163, 184, 0.4);
-      background: rgba(15, 23, 42, 0.95);
+    .card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
     }
 
-    #ai-user-input {
-      flex: 1;
-      border: none;
-      padding: 10px;
-      font-size: 14px;
-      outline: none;
-      background: transparent;
-      color: #e5e7eb;
+    .card strong {
+      font-weight: 600;
     }
 
-    #ai-user-input::placeholder {
-      color: rgba(148, 163, 184, 0.8);
-    }
-
-    #ai-send-btn {
-      border: none;
-      background: #7c3aed;
-      color: #f9fafb;
-      padding: 0 16px;
-      cursor: pointer;
-      font-weight: 500;
-      border-radius: 0 0 12px 0;
-    }
-
-    #ai-send-btn:hover:not(:disabled) {
-      background: #6d28d9;
-    }
-
-    #ai-send-btn:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-
-    /* Right panel content */
-    .coming-soon {
-      height: 100%;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 8px;
-      border: 1px dashed rgba(148, 163, 184, 0.6);
-    }
-
-    .coming-soon h2 {
-      margin-bottom: 4px;
-      font-size: 1.2rem;
-    }
-
-    .coming-soon p {
-      line-height: 1.4;
-      font-size: 0.9rem;
-      color: #e5e7eb;
-    }
-
-    .coming-soon ul {
-      margin-left: 18px;
-      font-size: 0.9rem;
-      color: #e5e7eb;
-    }
-
-    /* Footer / contact */
     .site-footer {
       margin-top: 8px;
       text-align: center;
@@ -380,22 +149,15 @@
       opacity: 0.9;
     }
 
-    .site-footer span.sep {
-      opacity: 0.7;
-      margin: 0 6px;
-    }
-
-    @media (max-width: 800px) {
-      .content-row {
+    @media (max-width: 640px) {
+      .site-banner {
         flex-direction: column;
-      }
-      .panel {
-        min-height: 260px;
+        align-items: flex-start;
+        gap: 8px;
       }
     }
 
-    /* --- Logo SVG animations --- */
-
+    /* Hat SVG animations (same style as home) */
     .wizard-icon svg .ring-burst {
       transform-box: fill-box;
       transform-origin: 60px 60px;
@@ -415,28 +177,21 @@
   </style>
 </head>
 <body>
-  <!-- Lightning effect overlay -->
-  <div class="lightning-overlay" aria-hidden="true"></div>
-
   <div class="page-wrapper">
     <div class="main-container">
 
-      <!-- Top banner -->
       <header class="site-banner">
-        <div class="banner-inner">
-          <!-- CLICKABLE LOGO -> About page -->
-          <a href="about.html" class="wizard-logo-link" title="About WizardKnows">
+        <div class="banner-left">
+          <!-- Non-clickable hat logo on About page -->
+          <div class="wizard-logo-box">
             <div class="wizard-icon" aria-hidden="true">
-              <!-- Logo: large wizard hat in a circle, with stars and burst -->
               <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <defs>
-                  <!-- Hat gradient -->
                   <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="#e5edff"/>
                     <stop offset="40%" stop-color="#60a5fa"/>
                     <stop offset="100%" stop-color="#1d4ed8"/>
                   </linearGradient>
-                  <!-- Brim gradient -->
                   <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stop-color="#1e3a8a"/>
                     <stop offset="100%" stop-color="#1d4ed8"/>
@@ -506,494 +261,6 @@
 
                 <!-- Yellow stars on the hat -->
                 <g fill="#facc15">
-                  <!-- small dots -->
-                  <circle cx="52" cy="32" r="1.4" class="star" />
-                  <circle cx="68" cy="30" r="1.4" class="star" />
-                  <circle cx="64" cy="44" r="1.4" class="star" />
-                  <circle cx="56" cy="48" r="1.2" class="star" />
-                  <!-- simple 4-point stars -->
-                  <g class="star">
-                    <path d="M49 40 L50 38 L51 40 L53 41 L51 42 L50 44 L49 42 L47 41 Z" />
-                    <path d="M70 38 L71 36 L72 38 L74 39 L72 40 L71 42 L70 40 L68 39 Z" />
-                  </g>
-                </g>
-              </svg>
-            </div>
-          </a>
-
-          <div class="brand-text">
-            <h1>Wizard Knows</h1>
-            <p>The Wizard knows! Guided DIY help for all your home products.</p>
-          </div>
-        </div>
-      </header>
-
-      <!-- Main two-column content -->
-      <div class="content-row">
-        <!-- LEFT: Chatbot -->
-        <div class="left">
-          <div class="panel">
-            <div class="panel-header">Wizard Chat - One-on-One Product Help</div>
-            <div class="panel-body">
-              <div id="ai-widget">
-                <div id="ai-widget-header">
-                  <span class="chat-wizard-icon" aria-hidden="true">🧙‍♂️</span>
-                  <span>Chat with the Wizard</span>
-                </div>
-                <div id="ai-chat-log">
-                  <div class="msg msg-wizard">
-                    <strong>Wizard</strong>
-                    <div class="msg-bubble">
-                      Please describe your product's problem as vividly as possible. The more detail you provide (what it does or doesn't do, any noises, smells, lights, and error codes), the better I can assist you.
-                    </div>
-                  </div>
-                </div>
-                <div id="ai-widget-footer">
-                  <input
-                    id="ai-user-input"
-                    type="text"
-                    placeholder="Type your question..."
-                    autocomplete="off"
-                  />
-                  <button id="ai-send-btn">Send</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT: Discussion forum placeholder -->
-        <div class="right">
-          <div class="panel">
-            <div class="panel-header">Community Discussion (Coming Soon)</div>
-            <div class="panel-body">
-              <div class="coming-soon">
-                <h2>Community Forum Coming Soon</h2>
-                <p>
-                  This area will host a discussion forum where you and other users can:
-                </p>
-                <ul>
-                  <li>Share repair experiences with your products</li>
-                  <li>Ask follow-up questions</li>
-                  <li>Discuss tricky product issues</li>
-                </ul>
-                <p>
-                  For now, you can use the Wizard on the left for one-on-one help.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer / contact -->
-      <footer class="site-footer">
-        Contact us at
-        <a href="mailto:wizardknows@outlook.com">wizardknows@outlook.com</a>
-        <span class="sep">|</span>
-        <a href="about.html">About</a>
-      </footer>
-
-    </div>
-  </div>
-
-  <!-- Chat + lightning JS -->
-  <script>
-    const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
-
-    const sessionId = (window.crypto && crypto.randomUUID)
-      ? crypto.randomUUID()
-      : 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2);
-
-    let chatHistory = [];
-
-    const logEl = document.getElementById('ai-chat-log');
-    const inputEl = document.getElementById('ai-user-input');
-    const sendBtn = document.getElementById('ai-send-btn');
-    const chatWizardIcon = document.querySelector('.chat-wizard-icon');
-    const lightningEl = document.querySelector('.lightning-overlay');
-
-    function appendMessage(sender, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'msg ' + (sender === 'Wizard' ? 'msg-wizard' : 'msg-user');
-
-      const nameEl = document.createElement('strong');
-      nameEl.textContent = sender;
-      const bubbleEl = document.createElement('div');
-      bubbleEl.className = 'msg-bubble';
-      bubbleEl.textContent = text;
-
-      msgDiv.appendChild(nameEl);
-      msgDiv.appendChild(bubbleEl);
-      logEl.appendChild(msgDiv);
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    async function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text) return;
-
-      appendMessage('You', text);
-      chatHistory.push({ role: 'user', content: text });
-
-      inputEl.value = '';
-      inputEl.focus();
-      sendBtn.disabled = true;
-
-      if (chatWizardIcon) {
-        chatWizardIcon.classList.add('thinking');
-      }
-
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: text,
-            history: chatHistory,
-            sessionId: sessionId
-          }),
-        });
-
-        const data = await res.json();
-        const reply = data.reply || 'Sorry, I had trouble answering that.';
-
-        appendMessage('Wizard', reply);
-        chatHistory.push({ role: 'assistant', content: reply });
-      } catch (err) {
-        appendMessage('Wizard', 'There was an error contacting the server.');
-      } finally {
-        sendBtn.disabled = false;
-        if (chatWizardIcon) {
-          chatWizardIcon.classList.remove('thinking');
-        }
-      }
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
-    });
-
-    // --- Lightning logic for page background ---
-    function triggerLightning() {
-      if (!lightningEl) return;
-      lightningEl.classList.add('flash');
-      setTimeout(() => {
-        lightningEl.classList.remove('flash');
-      }, 500);
-    }
-
-    function scheduleLightning() {
-      if (!lightningEl) return;
-      const minDelay = 15000;
-      const maxDelay = 45000;
-      const delay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-
-      setTimeout(() => {
-        triggerLightning();
-        scheduleLightning();
-      }, delay);
-    }
-
-    scheduleLightning();
-  </script>
-</body>
-</html>
-```
-
----
-
-## 2. New `about.html` (About page, same hat logo)
-
-1. If `about.html` exists, open it:
-
-   ```bat
-   notepad about.html
-   ```
-
-2. Select all, delete, and paste this in:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>About - Wizard Knows</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body, html {
-      height: 100%;
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #7c3aed 0%, #4c1d95 45%, #1e1633 100%);
-      color: #f9f5ff;
-    }
-
-    a {
-      color: #e9d5ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .page-wrapper {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      padding: 8px 12px 12px;
-    }
-
-    .main-container {
-      width: 100%;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    /* Top banner with logo and title */
-    .site-banner {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.96), rgba(147, 51, 234, 0.96));
-      border-radius: 20px;
-      padding: 14px 18px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.5);
-      margin-bottom: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .banner-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .banner-title {
-      font-size: 1.7rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-    }
-
-    /* Home button */
-    .home-button {
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      font-size: 0.9rem;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .home-button:hover {
-      background: rgba(15, 23, 42, 0.7);
-    }
-
-    /* Logo styles (same hat as home page, slightly smaller) */
-    .wizard-logo-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      position: relative;
-    }
-
-    .wizard-icon {
-      width: 110px;
-      height: 110px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, rgba(219, 234, 254, 0.55), rgba(15, 23, 42, 0.95));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      position: relative;
-      overflow: visible;
-      box-shadow: 0 0 22px rgba(191, 219, 254, 0.9);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      cursor: pointer;
-    }
-
-    .wizard-logo-link:hover .wizard-icon {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 0 28px rgba(224, 231, 255, 1);
-    }
-
-    .wizard-logo-link::after {
-      content: "Back to Home";
-      position: absolute;
-      bottom: -26px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-    }
-
-    .wizard-logo-link:hover::after {
-      opacity: 1;
-    }
-
-    .wizard-icon svg {
-      width: 96px;
-      height: 96px;
-      display: block;
-      overflow: visible;
-    }
-
-    /* Cards / content */
-    .card {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 16px;
-      padding: 20px 18px 24px;
-      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.7);
-      margin-bottom: 12px;
-    }
-
-    .card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-    }
-
-    .card p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-
-    .card strong {
-      font-weight: 600;
-    }
-
-    .site-footer {
-      margin-top: 8px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #e5e7eb;
-      opacity: 0.9;
-    }
-
-    @media (max-width: 640px) {
-      .site-banner {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    /* Logo animations (same burst + stars as home) */
-    .wizard-icon svg .ring-burst {
-      transform-box: fill-box;
-      transform-origin: 60px 60px;
-      animation: ring-burst 4s ease-out infinite;
-    }
-
-    @keyframes ring-burst {
-      0%   { opacity: 0; transform: scale(0.7) rotate(0deg); }
-      20%  { opacity: 1; transform: scale(1.05) rotate(8deg); }
-      60%  { opacity: 0.6; transform: scale(1.2) rotate(0deg); }
-      100% { opacity: 0; transform: scale(1.35) rotate(-6deg); }
-    }
-
-    .wizard-icon svg .star {
-      fill: #facc15;
-    }
-  </style>
-</head>
-<body>
-  <div class="page-wrapper">
-    <div class="main-container">
-
-      <header class="site-banner">
-        <div class="banner-left">
-          <!-- Logo on About page, clickable back to Home -->
-          <a href="index.html" class="wizard-logo-link" title="Back to Home">
-            <div class="wizard-icon" aria-hidden="true">
-              <!-- Same hat logo as on Home, slightly smaller -->
-              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#e5edff"/>
-                    <stop offset="40%" stop-color="#60a5fa"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                  <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#1e3a8a"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                </defs>
-
-                <circle cx="60" cy="60" r="54" fill="none"
-                        stroke="rgba(191,219,254,0.9)" stroke-width="2.8" />
-
-                <g class="ring-burst">
-                  <line x1="60" y1="4"  x2="60" y2="0"  stroke="#facc15" stroke-width="2" />
-                  <line x1="60" y1="116" x2="60" y2="120" stroke="#facc15" stroke-width="2" />
-                  <line x1="4"  y1="60" x2="0"  y2="60" stroke="#facc15" stroke-width="2" />
-                  <line x1="116" y1="60" x2="120" y2="60" stroke="#facc15" stroke-width="2" />
-                  <line x1="18" y1="18" x2="13" y2="13" stroke="#facc15" stroke-width="1.8" />
-                  <line x1="102" y1="18" x2="107" y2="13" stroke="#facc15" stroke-width="1.8" />
-                  <line x1="18" y1="102" x2="13" y2="107" stroke="#facc15" stroke-width="1.8" />
-                  <line x1="102" y1="102" x2="107" y2="107" stroke="#facc15" stroke-width="1.8" />
-                </g>
-
-                <ellipse cx="60" cy="82" rx="24" ry="7" fill="rgba(15,23,42,0.75)" />
-                <ellipse cx="60" cy="74" rx="30" ry="10" fill="url(#brimGradient)" />
-                <path
-                  d="M70 22
-                     C56 28, 48 42, 45 54
-                     C43.5 59, 43 63, 42.5 65.5
-                     L40 76
-                     L80 76
-                     L77 64
-                     C74.5 52, 73 42, 70 22Z"
-                  fill="url(#hatGradient)"
-                  stroke="#1d4ed8"
-                  stroke-width="1.3"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M54 36
-                     C51 42, 49 48.5, 48 55"
-                  fill="none"
-                  stroke="#bfdbfe"
-                  stroke-width="1.1"
-                  stroke-linecap="round"
-                  opacity="0.85"
-                />
-                <rect
-                  x="51"
-                  y="60"
-                  width="18"
-                  height="5"
-                  rx="2.5"
-                  fill="#facc15"
-                />
-                <circle cx="60" cy="62.5" r="2.1" fill="#fef9c3" />
-
-                <g fill="#facc15">
                   <circle cx="52" cy="32" r="1.4" class="star" />
                   <circle cx="68" cy="30" r="1.4" class="star" />
                   <circle cx="64" cy="44" r="1.4" class="star" />
@@ -1005,7 +272,7 @@
                 </g>
               </svg>
             </div>
-          </a>
+          </div>
 
           <div class="banner-title">About WizardKnows</div>
         </div>
