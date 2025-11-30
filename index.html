@@ -1,1200 +1,697 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Wizard Knows – Product Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Wizard Knows – Appliance Help Wizard</title>
+  <meta
+    name="description"
+    content="Wizard Knows – one-on-one help for major home appliances. Safe, step-by-step troubleshooting for refrigerators, washers, dryers, ovens, dishwashers, and more."
+  />
 
   <style>
+    :root {
+      --bg: #0f172a;
+      --bg-elevated: #020617;
+      --accent: #7c3aed;
+      --accent-soft: #4c1d95;
+      --accent-bright: #a855f7;
+      --accent-gold: #fbbf24;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.3);
+      --danger: #f97373;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    body, html {
-      height: 100%;
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #7c3aed 0%, #4c1d95 45%, #1e1633 100%);
-      color: #f9f5ff;
-    }
-
-    a {
-      color: #e9d5ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-
-    /* Lightning overlay that flashes over everything */
-    .lightning-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 50;
-      opacity: 0;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.9) 0, transparent 55%),
-        radial-gradient(circle at 80% 0%, rgba(227, 233, 255, 0.9) 0, transparent 50%);
-      mix-blend-mode: screen;
-    }
-
-    .lightning-overlay.flash {
-      animation: lightning-flash 0.45s ease-out;
-    }
-
-    @keyframes lightning-flash {
-      0%   { opacity: 0; }
-      12%  { opacity: 1; }
-      35%  { opacity: 0.25; }
-      55%  { opacity: 0.85; }
-      100% { opacity: 0; }
-    }
-
-    .page-wrapper {
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      padding: 8px 12px;
-      position: relative;
-      z-index: 100;
     }
 
-    .main-container {
-      width: 100%;
-      max-width: none;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    /* Top banner */
-    .site-banner {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(147, 51, 234, 0.95));
-      border-radius: 16px;
-      padding: 18px 22px;
-      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.4);
-      margin-bottom: 16px;
-    }
-
-    .banner-inner {
+    main {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      text-align: center;
+      padding: 1.5rem 1rem 3rem;
     }
 
-    @media (min-width: 640px) {
-      .banner-inner {
-        flex-direction: row;
-        justify-content: flex-start;
-        text-align: left;
-      }
+    /* Top Banner / Header */
+
+    header {
+      width: 100%;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at top left, #4c1d95 0, #020617 45%);
     }
 
-    /* Clickable wrapper for logo */
-    .wizard-logo-link {
-      display: inline-flex;
+    .top-bar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      position: relative;
+      gap: 1.5rem;
     }
 
-    /* Circular icon container for the wizard hat + tools */
-    .wizard-icon {
-      width: 96px;
-      height: 96px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, rgba(219, 234, 254, 0.35), rgba(15, 23, 42, 0.9));
+    .brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      position: relative;
-      overflow: visible; /* allow bolt/sparkle to go outside circle */
-      box-shadow: 0 0 18px rgba(129, 140, 248, 0.7);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      cursor: pointer;
-    }
-
-    .wizard-logo-link:hover .wizard-icon {
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 0 22px rgba(191, 219, 254, 0.9);
-    }
-
-    /* Small hover tooltip */
-    .wizard-logo-link::after {
-      content: "Click to learn about WizardKnows";
-      position: absolute;
-      bottom: -32px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-    }
-
-    .wizard-logo-link:hover::after {
-      opacity: 1;
-    }
-
-    /* Scale the inline SVG nicely inside the circle */
-    .wizard-icon svg {
-      width: 82px;
-      height: 82px;
-      display: block;
-      overflow: visible;
+      gap: 0.9rem;
     }
 
     .brand-text h1 {
-      font-size: 2.3rem;
-      font-weight: 600;
+      font-size: 1.6rem;
+      font-weight: 700;
       letter-spacing: 0.04em;
     }
 
     .brand-text p {
-      font-size: 0.95rem;
-      opacity: 0.9;
-      margin-top: 4px;
-    }
-
-    /* Main content: two columns */
-    .content-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .left, .right {
-      flex: 1;
-      min-width: 280px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 16px;
-      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.7);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .panel-header {
-      padding: 12px 16px;
-      background: rgba(31, 41, 55, 0.9);
-      color: #e5e7eb;
-      font-weight: 500;
-      font-size: 0.95rem;
-      border-radius: 16px 16px 0 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
-    }
-
-    .panel-body {
-      flex: 1;
-      overflow: auto;
-      padding: 10px;
-      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.18), rgba(15, 23, 42, 0.95));
-      border-radius: 0 0 16px 16px;
-    }
-
-    /* Chat widget fills the left panel */
-    #ai-widget {
-      height: 100%;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    #ai-widget-header {
-      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-      color: white;
-      padding: 12px 16px;
-      font-size: 1.08rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .chat-wizard-icon {
-      font-size: 2.1rem;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition:
-        transform 0.2s ease,
-        text-shadow 0.2s ease,
-        filter 0.2s ease;
-    }
-
-    .chat-wizard-icon.thinking {
-      animation: wizard-pulse 0.8s ease-in-out infinite alternate;
-      text-shadow: 0 0 10px rgba(191, 219, 254, 1);
-      filter: brightness(1.25);
-    }
-
-    @keyframes wizard-pulse {
-      from { transform: scale(1); }
-      to   { transform: scale(1.2) translateY(-1px); }
-    }
-
-    #ai-chat-log {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
-
-    .msg {
-      margin-bottom: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .msg strong {
-      font-size: 0.8rem;
-      opacity: 0.8;
-    }
-    .msg-bubble {
-      display: inline-block;
-      padding: 8px 10px;
-      border-radius: 10px;
-      max-width: 100%;
-      line-height: 1.4;
-    }
-    .msg-user .msg-bubble {
-      background: rgba(129, 140, 248, 0.9);
-      color: #0f172a;
-      align-self: flex-end;
-    }
-    .msg-wizard .msg-bubble {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: #e5e7eb;
-      align-self: flex-start;
-    }
-
-    #ai-widget-footer {
-      display: flex;
-      border-top: 1px solid rgba(148, 163, 184, 0.4);
-      background: rgba(15, 23, 42, 0.95);
-    }
-
-    #ai-user-input {
-      flex: 1;
-      border: none;
-      padding: 10px;
-      font-size: 14px;
-      outline: none;
-      background: transparent;
-      color: #e5e7eb;
-    }
-
-    #ai-user-input::placeholder {
-      color: rgba(148, 163, 184, 0.8);
-    }
-
-    #ai-send-btn {
-      border: none;
-      background: #7c3aed;
-      color: #f9fafb;
-      padding: 0 16px;
-      cursor: pointer;
-      font-weight: 500;
-      border-radius: 0 0 12px 0;
-    }
-
-    #ai-send-btn:hover:not(:disabled) {
-      background: #6d28d9;
-    }
-
-    #ai-send-btn:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-
-    /* Right panel content */
-    .coming-soon {
-      height: 100%;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 8px;
-      border: 1px dashed rgba(148, 163, 184, 0.6);
-    }
-
-    .coming-soon h2 {
-      margin-bottom: 4px;
-      font-size: 1.2rem;
-    }
-
-    .coming-soon p {
-      line-height: 1.4;
-      font-size: 0.9rem;
-      color: #e5e7eb;
-    }
-
-    .coming-soon ul {
-      margin-left: 18px;
-      font-size: 0.9rem;
-      color: #e5e7eb;
-    }
-
-    /* Footer / contact */
-    .site-footer {
-      margin-top: 8px;
-      text-align: center;
       font-size: 0.85rem;
-      color: #e5e7eb;
-      opacity: 0.9;
+      color: var(--text-soft);
     }
 
-    .site-footer span.sep {
-      opacity: 0.7;
-      margin: 0 6px;
-    }
+    /* Wizard Hat + Wand Logo */
 
-    @media (max-width: 800px) {
-      .content-row {
-        flex-direction: column;
-      }
-      .panel {
-        min-height: 260px;
-      }
-    }
-
-    /* --- Logo SVG animations --- */
-
-    .wizard-icon svg .bolt,
-    .wizard-icon svg .sparkle {
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
-
-    /* Lightning bolt from wrench every 5 seconds */
-    .bolt {
-      animation: bolt-shoot 5s linear infinite;
-    }
-
-    @keyframes bolt-shoot {
-      0% {
-        opacity: 0;
-        transform: translateY(0) scale(0.4);
-      }
-      10% {
-        opacity: 1;
-      }
-      40% {
-        opacity: 1;
-        transform: translateY(-60px) scale(0.7);
-      }
-      60% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-80px) scale(0.7);
-      }
-    }
-
-    /* Sparkle burst from screwdriver every 4 seconds */
-    .sparkle {
-      animation: sparkle-burst 4s ease-out infinite;
-    }
-
-    @keyframes sparkle-burst {
-      0%, 70% {
-        opacity: 0;
-        transform: scale(0.3);
-      }
-      75% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1.6);
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Lightning effect overlay -->
-  <div class="lightning-overlay" aria-hidden="true"></div>
-
-  <div class="page-wrapper">
-    <div class="main-container">
-
-      <!-- Top banner -->
-      <header class="site-banner">
-        <div class="banner-inner">
-          <!-- CLICKABLE LOGO -> About page -->
-          <a href="about.html" class="wizard-logo-link" title="About WizardKnows">
-            <div class="wizard-icon" aria-hidden="true">
-              <!-- New logo: wizard hat with crossed wrench & screwdriver, plus bolt & sparkle -->
-              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <!-- Hat gradient -->
-                  <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#bfdbfe"/>
-                    <stop offset="40%" stop-color="#60a5fa"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                  <!-- Brim gradient -->
-                  <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#1e3a8a"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                  <!-- Handle gradient for tools -->
-                  <linearGradient id="toolHandle" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#f97316"/>
-                    <stop offset="100%" stop-color="#ea580c"/>
-                  </linearGradient>
-                </defs>
-
-                <!-- Outer glow circle -->
-                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(191,219,254,0.22)" stroke-width="2"/>
-
-                <!-- CROSSED TOOLS (behind the hat) -->
-
-                <!-- WRENCH (tilted) -->
-                <g id="wrench" transform="translate(24,74) rotate(-35 36 -30)">
-                  <!-- handle -->
-                  <rect x="34" y="8" width="12" height="54" rx="5" fill="#0f172a" stroke="#9ca3af" stroke-width="1.2"/>
-                  <!-- head (open end) -->
-                  <path
-                    d="M40 6
-                       L47 0
-                       L51 4
-                       L46 10
-                       L49 16
-                       L45 19
-                       L38 13
-                       Z"
-                    fill="#e5e7eb"
-                    stroke="#9ca3af"
-                    stroke-width="1.2"
-                  />
-                </g>
-
-                <!-- SCREWDRIVER (opposite angle) -->
-                <g id="screwdriver" transform="translate(70,20) rotate(45 0 40)">
-                  <!-- blade -->
-                  <rect x="-4" y="8" width="8" height="30" rx="2" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
-                  <!-- tip -->
-                  <path
-                    d="M0 4 L4 8 L-4 8 Z"
-                    fill="#cbd5f5"
-                    stroke="#9ca3af"
-                    stroke-width="1"
-                  />
-                  <!-- handle -->
-                  <rect x="-7" y="32" width="14" height="20" rx="5" fill="url(#toolHandle)" stroke="#9a3412" stroke-width="1.1"/>
-                </g>
-
-                <!-- WIZARD HAT (foreground, like the 'skull') -->
-                <!-- Shadow under brim -->
-                <ellipse cx="60" cy="78" rx="22" ry="6" fill="rgba(15,23,42,0.7)"/>
-
-                <!-- Brim -->
-                <ellipse cx="60" cy="72" rx="26" ry="9" fill="url(#brimGradient)"/>
-
-                <!-- Cone -->
-                <path
-                  d="M68 24
-                     C55 30, 48 42, 45 52
-                     C43.5 56, 43 60, 42.5 62.5
-                     L40 70
-                     L80 70
-                     L77 60
-                     C74.5 50, 72 40, 68 24Z"
-                  fill="url(#hatGradient)"
-                  stroke="#1d4ed8"
-                  stroke-width="1.3"
-                  stroke-linejoin="round"
-                />
-
-                <!-- Highlight on cone -->
-                <path
-                  d="M53 38
-                     C50 44, 48 48.5, 47 54"
-                  fill="none"
-                  stroke="#bfdbfe"
-                  stroke-width="1.1"
-                  stroke-linecap="round"
-                  opacity="0.8"
-                />
-
-                <!-- Hat band -->
-                <rect
-                  x="51"
-                  y="56"
-                  width="18"
-                  height="4.7"
-                  rx="2.35"
-                  fill="#facc15"
-                />
-
-                <!-- Gem -->
-                <circle cx="60" cy="58.3" r="2" fill="#fef9c3"/>
-
-                <!-- Sparkles on hat -->
-                <circle cx="50" cy="32" r="1.4" fill="#e0f2fe"/>
-                <circle cx="70" cy="30" r="1.4" fill="#e0f2fe"/>
-                <circle cx="64" cy="44" r="1.2" fill="#e0f2fe"/>
-
-                <!-- LIGHTNING BOLT (from wrench) -->
-                <g class="bolt" transform="translate(78,18)">
-                  <path
-                    d="M0 0
-                       L6 -10
-                       L4 -2
-                       L10 -2
-                       L2 12
-                       L4 2
-                       Z"
-                    fill="#fef9c3"
-                    stroke="#eab308"
-                    stroke-width="1"
-                  />
-                </g>
-
-                <!-- SPARKLE BURST (from screwdriver tip) -->
-                <g class="sparkle" transform="translate(42,28)">
-                  <circle cx="0" cy="0" r="2.2" fill="#e0f2fe"/>
-                  <line x1="-5" y1="0" x2="-9" y2="0" stroke="#e0f2fe" stroke-width="1.1"/>
-                  <line x1="5" y1="0" x2="9" y2="0" stroke="#e0f2fe" stroke-width="1.1"/>
-                  <line x1="0" y1="-5" x2="0" y2="-9" stroke="#e0f2fe" stroke-width="1.1"/>
-                  <line x1="0" y1="5" x2="0" y2="9" stroke="#e0f2fe" stroke-width="1.1"/>
-                </g>
-              </svg>
-            </div>
-          </a>
-
-          <div class="brand-text">
-            <h1>Wizard Knows</h1>
-            <p>The Wizard knows! Guided DIY help for all your home products.</p>
-          </div>
-        </div>
-      </header>
-
-      <!-- Main two-column content -->
-      <div class="content-row">
-        <!-- LEFT: Chatbot -->
-        <div class="left">
-          <div class="panel">
-            <div class="panel-header">Wizard Chat – One-on-One Product Help</div>
-            <div class="panel-body">
-              <div id="ai-widget">
-                <div id="ai-widget-header">
-                  <span class="chat-wizard-icon" aria-hidden="true">🧙</span>
-                  <span>Chat with the Wizard</span>
-                </div>
-                <div id="ai-chat-log">
-                  <div class="msg msg-wizard">
-                    <strong>Wizard</strong>
-                    <div class="msg-bubble">
-                      Please describe your product's problem as vividly as possible. The more detail you provide (what it does or doesn’t do, any noises, smells, lights, and error codes), the better I can assist you.
-                    </div>
-                  </div>
-                </div>
-                <div id="ai-widget-footer">
-                  <input
-                    id="ai-user-input"
-                    type="text"
-                    placeholder="Type your question..."
-                    autocomplete="off"
-                  />
-                  <button id="ai-send-btn">Send</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT: Discussion forum placeholder -->
-        <div class="right">
-          <div class="panel">
-            <div class="panel-header">Community Discussion (Coming Soon)</div>
-            <div class="panel-body">
-              <div class="coming-soon">
-                <h2>Community Forum Coming Soon</h2>
-                <p>
-                  This area will host a discussion forum where you and other users can:
-                </p>
-                <ul>
-                  <li>Share repair experiences with your products</li>
-                  <li>Ask follow-up questions</li>
-                  <li>Discuss tricky product issues</li>
-                </ul>
-                <p>
-                  For now, you can use the Wizard on the left for one-on-one help.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer / contact -->
-      <footer class="site-footer">
-        Contact us at
-        <a href="mailto:wizardknows@outlook.com">wizardknows@outlook.com</a>
-        <span class="sep">|</span>
-        <a href="about.html">About</a>
-      </footer>
-
-    </div>
-  </div>
-
-  <!-- Chat + lightning JS -->
-  <script>
-    const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
-
-    const sessionId = (window.crypto && crypto.randomUUID)
-      ? crypto.randomUUID()
-      : 'session-' + Date.now() + '-' + Math.random().toString(36).slice(2);
-
-    let chatHistory = [];
-
-    const logEl = document.getElementById('ai-chat-log');
-    const inputEl = document.getElementById('ai-user-input');
-    const sendBtn = document.getElementById('ai-send-btn');
-    const chatWizardIcon = document.querySelector('.chat-wizard-icon');
-    const lightningEl = document.querySelector('.lightning-overlay');
-
-    function appendMessage(sender, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'msg ' + (sender === 'Wizard' ? 'msg-wizard' : 'msg-user');
-
-      const nameEl = document.createElement('strong');
-      nameEl.textContent = sender;
-      const bubbleEl = document.createElement('div');
-      bubbleEl.className = 'msg-bubble';
-      bubbleEl.textContent = text;
-
-      msgDiv.appendChild(nameEl);
-      msgDiv.appendChild(bubbleEl);
-      logEl.appendChild(msgDiv);
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    async function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text) return;
-
-      appendMessage('You', text);
-      chatHistory.push({ role: 'user', content: text });
-
-      inputEl.value = '';
-      inputEl.focus();
-      sendBtn.disabled = true;
-
-      if (chatWizardIcon) {
-        chatWizardIcon.classList.add('thinking');
-      }
-
-      try {
-        const res = await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: text,
-            history: chatHistory,
-            sessionId: sessionId
-          }),
-        });
-
-        const data = await res.json();
-        const reply = data.reply || 'Sorry, I had trouble answering that.';
-
-        appendMessage('Wizard', reply);
-        chatHistory.push({ role: 'assistant', content: reply });
-      } catch (err) {
-        appendMessage('Wizard', 'There was an error contacting the server.');
-      } finally {
-        sendBtn.disabled = false;
-        if (chatWizardIcon) {
-          chatWizardIcon.classList.remove('thinking');
-        }
-      }
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
-    });
-
-    // --- Lightning logic for page background ---
-    function triggerLightning() {
-      if (!lightningEl) return;
-      lightningEl.classList.add('flash');
-      setTimeout(() => {
-        lightningEl.classList.remove('flash');
-      }, 500);
-    }
-
-    function scheduleLightning() {
-      if (!lightningEl) return;
-      const minDelay = 15000;
-      const maxDelay = 45000;
-      const delay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-
-      setTimeout(() => {
-        triggerLightning();
-        scheduleLightning();
-      }, delay);
-    }
-
-    scheduleLightning();
-  </script>
-</body>
-</html>
-```
-
----
-
-## 2. Updated `about.html` (About page with logo + your text)
-
-Changes vs the previous about page:
-
-- Adds the **same animated logo** in the banner, clickable back to Home, with a tooltip.
-- Uses your **About** and **Mission** text.
-- Keeps same color scheme and contact info at the bottom.
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>About – Wizard Knows</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body, html {
-      height: 100%;
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #7c3aed 0%, #4c1d95 45%, #1e1633 100%);
-      color: #f9f5ff;
-    }
-
-    a {
-      color: #e9d5ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .page-wrapper {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      padding: 8px 12px;
-    }
-
-    .main-container {
-      width: 100%;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    /* Top banner with logo and title */
-    .site-banner {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(147, 51, 234, 0.95));
-      border-radius: 16px;
-      padding: 14px 18px;
-      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.4);
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .banner-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .banner-title {
-      font-size: 1.6rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-
-    /* Home button */
-    .home-button {
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      font-size: 0.9rem;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .home-button:hover {
-      background: rgba(15, 23, 42, 0.7);
-    }
-
-    /* Logo styles (reused from home page, slightly smaller) */
-    .wizard-logo-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
+    .wizard-logo {
       position: relative;
+      width: 72px;
+      height: 72px;
+      display: inline-block;
     }
 
-    .wizard-icon {
-      width: 70px;
-      height: 70px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, rgba(219, 234, 254, 0.35), rgba(15, 23, 42, 0.9));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      position: relative;
-      overflow: visible;
-      box-shadow: 0 0 16px rgba(129, 140, 248, 0.7);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      cursor: pointer;
-    }
-
-    .wizard-logo-link:hover .wizard-icon {
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 0 20px rgba(191, 219, 254, 0.9);
-    }
-
-    .wizard-logo-link::after {
-      content: "Back to Home";
+    /* Hat */
+    .hat-crown {
       position: absolute;
-      bottom: -26px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 3px 8px;
+      bottom: 18px;
+      left: 11px;
+      width: 0;
+      height: 0;
+      border-left: 24px solid transparent;
+      border-right: 24px solid transparent;
+      border-bottom: 42px solid var(--accent-soft);
+      filter: drop-shadow(0 0 14px rgba(129, 140, 248, 0.7));
+    }
+
+    .hat-band {
+      position: absolute;
+      bottom: 27px;
+      left: 15px;
+      width: 44px;
+      height: 6px;
       border-radius: 999px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
+      background: linear-gradient(
+        90deg,
+        var(--accent-gold),
+        #f97316,
+        #fb7185
+      );
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+    }
+
+    .hat-brim {
+      position: absolute;
+      bottom: 13px;
+      left: 0;
+      width: 72px;
+      height: 10px;
+      border-radius: 999px;
+      background: #111827;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.9);
+    }
+
+    /* Wand */
+
+    .wand {
+      position: absolute;
+      bottom: 8px;
+      right: -4px;
+      width: 7px;
+      height: 60px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f9fafb, #e5e7eb);
+      box-shadow: 0 0 10px rgba(249, 250, 251, 0.8);
+      transform-origin: bottom center;
+      transform: rotate(28deg) translateX(2px);
+      overflow: visible;
+    }
+
+    .wand::before {
+      /* wand tip glow */
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: -4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #facc15 0, #f97316 60%, transparent 70%);
+      box-shadow:
+        0 0 16px rgba(250, 204, 21, 0.9),
+        0 0 30px rgba(251, 146, 60, 0.7);
+    }
+
+    .wand-core {
+      position: absolute;
+      top: 15%;
+      left: 20%;
+      width: 60%;
+      height: 70%;
+      border-radius: inherit;
       border: 1px solid rgba(148, 163, 184, 0.6);
     }
 
-    .wizard-logo-link:hover::after {
-      opacity: 1;
+    /* Sparkle Explosion */
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #e0f2fe 0, #7dd3fc 60%, transparent 80%);
+      opacity: 0;
+      animation: sparkle 2.2s ease-out infinite;
     }
 
-    .wizard-icon svg {
-      width: 60px;
-      height: 60px;
-      display: block;
-      overflow: visible;
+    .sparkle.s1 {
+      top: 6px;
+      right: -12px;
+      animation-delay: 0s;
     }
 
-    /* Cards / content */
+    .sparkle.s2 {
+      top: -4px;
+      right: -4px;
+      animation-delay: 0.4s;
+      width: 7px;
+      height: 7px;
+    }
+
+    .sparkle.s3 {
+      top: -10px;
+      right: 10px;
+      animation-delay: 0.9s;
+      width: 5px;
+      height: 5px;
+    }
+
+    .sparkle.s4 {
+      top: 0;
+      right: 22px;
+      animation-delay: 1.3s;
+    }
+
+    @keyframes sparkle {
+      0% {
+        transform: scale(0.2) translateY(0);
+        opacity: 0;
+      }
+      15% {
+        transform: scale(1) translateY(-3px);
+        opacity: 1;
+      }
+      60% {
+        transform: scale(1.1) translateY(-10px);
+        opacity: 0.75;
+      }
+      100% {
+        transform: scale(0.3) translateY(-18px);
+        opacity: 0;
+      }
+    }
+
+    /* Nav */
+
+    nav {
+      display: flex;
+      gap: 1.2rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      color: var(--text-soft);
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    nav a:hover {
+      color: #e5e7eb;
+      background: rgba(148, 163, 184, 0.15);
+    }
+
+    nav a.active {
+      color: #e5e7eb;
+      background: rgba(129, 140, 248, 0.22);
+    }
+
+    /* Layout */
+
+    .content {
+      max-width: 1100px;
+      width: 100%;
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.3fr);
+      gap: 1.5rem;
+    }
+
     .card {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 16px;
-      padding: 20px 18px 24px;
-      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.7);
-      margin-bottom: 12px;
+      background: radial-gradient(circle at top, #0b1120 0, #020617 60%);
+      border-radius: 1.25rem;
+      border: 1px solid var(--border-subtle);
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.95),
+        0 0 0 1px rgba(15, 23, 42, 0.6);
+      padding: 1.25rem 1.4rem;
     }
 
     .card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
     }
 
-    .card p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 10px;
+    .card p.subtitle {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      margin-bottom: 0.75rem;
     }
 
-    .card strong {
+    /* Chat UI */
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      height: 520px;
+    }
+
+    .chat-log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+      border-radius: 0.9rem;
+      background: radial-gradient(circle at top left, #020617 0, #020617 60%);
+      border: 1px solid rgba(51, 65, 85, 0.85);
+    }
+
+    .msg {
+      margin-bottom: 0.75rem;
+      max-width: 88%;
+      line-height: 1.4;
+      font-size: 0.92rem;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg.user {
+      margin-left: auto;
+      background: linear-gradient(135deg, #1d4ed8, #4f46e5);
+      padding: 0.55rem 0.7rem;
+      border-radius: 1rem 0.25rem 1rem 1rem;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.5);
+    }
+
+    .msg.assistant {
+      margin-right: auto;
+      background: rgba(15, 23, 42, 0.95);
+      padding: 0.55rem 0.7rem;
+      border-radius: 0.25rem 1rem 1rem 1rem;
+      border: 1px solid rgba(129, 140, 248, 0.45);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.85);
+    }
+
+    .msg.system {
+      margin: 0.25rem auto;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      opacity: 0.8;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.25rem;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      min-height: 60px;
+      max-height: 120px;
+      padding: 0.55rem 0.65rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(129, 140, 248, 0.9);
+      box-shadow:
+        0 0 0 1px rgba(79, 70, 229, 0.8),
+        0 0 18px rgba(79, 70, 229, 0.55);
+    }
+
+    button.send-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 0.9rem;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow:
+        0 10px 22px rgba(88, 28, 135, 0.7),
+        0 0 16px rgba(129, 140, 248, 0.65);
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        filter 0.08s ease;
+    }
+
+    button.send-btn:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      box-shadow: none;
+    }
+
+    button.send-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    button.send-btn span.icon {
+      font-size: 1rem;
+    }
+
+    .helper-text {
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      margin-top: 0.25rem;
+    }
+
+    .helper-text strong {
+      color: #e5e7eb;
       font-weight: 600;
     }
 
-    .site-footer {
-      margin-top: 8px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #e5e7eb;
-      opacity: 0.9;
+    /* Right Column (Community card) */
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.07);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #bbf7d0;
+      font-size: 0.7rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .pill span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.85);
+    }
+
+    ul {
+      padding-left: 1.1rem;
+      margin-top: 0.4rem;
+      font-size: 0.88rem;
+      color: var(--text-soft);
+    }
+
+    li + li {
+      margin-top: 0.25rem;
+    }
+
+    /* Footer */
+
+    footer {
+      border-top: 1px solid rgba(30, 64, 175, 0.55);
+      background: radial-gradient(circle at top, #020617 0, #020617 60%);
+      padding: 0.7rem 1rem 1.1rem;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-inner a {
+      color: #c4b5fd;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 900px) {
+      .content {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     @media (max-width: 640px) {
-      .site-banner {
+      .top-bar {
         flex-direction: column;
         align-items: flex-start;
       }
-    }
 
-    /* Logo animations (same behavior as home page) */
-    .wizard-icon svg .bolt,
-    .wizard-icon svg .sparkle {
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
+      .brand-text h1 {
+        font-size: 1.4rem;
+      }
 
-    .bolt {
-      animation: bolt-shoot 5s linear infinite;
-    }
+      nav {
+        align-self: stretch;
+        justify-content: flex-start;
+      }
 
-    @keyframes bolt-shoot {
-      0% {
-        opacity: 0;
-        transform: translateY(0) scale(0.4);
-      }
-      10% {
-        opacity: 1;
-      }
-      40% {
-        opacity: 1;
-        transform: translateY(-60px) scale(0.7);
-      }
-      60% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-80px) scale(0.7);
-      }
-    }
-
-    .sparkle {
-      animation: sparkle-burst 4s ease-out infinite;
-    }
-
-    @keyframes sparkle-burst {
-      0%, 70% {
-        opacity: 0;
-        transform: scale(0.3);
-      }
-      75% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1.6);
+      .chat-container {
+        height: 480px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-wrapper">
-    <div class="main-container">
+  <header>
+    <div class="top-bar">
+      <div class="brand">
+        <div class="wizard-logo" aria-hidden="true">
+          <div class="hat-brim"></div>
+          <div class="hat-crown"></div>
+          <div class="hat-band"></div>
 
-      <header class="site-banner">
-        <div class="banner-left">
-          <!-- Logo on About page, clickable back to Home -->
-          <a href="index.html" class="wizard-logo-link" title="Back to Home">
-            <div class="wizard-icon" aria-hidden="true">
-              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="hatGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#bfdbfe"/>
-                    <stop offset="40%" stop-color="#60a5fa"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                  <linearGradient id="brimGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#1e3a8a"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                  <linearGradient id="toolHandle" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#f97316"/>
-                    <stop offset="100%" stop-color="#ea580c"/>
-                  </linearGradient>
-                </defs>
-
-                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(191,219,254,0.22)" stroke-width="2"/>
-
-                <!-- WRENCH -->
-                <g transform="translate(24,74) rotate(-35 36 -30)">
-                  <rect x="34" y="8" width="12" height="54" rx="5" fill="#0f172a" stroke="#9ca3af" stroke-width="1.2"/>
-                  <path
-                    d="M40 6
-                       L47 0
-                       L51 4
-                       L46 10
-                       L49 16
-                       L45 19
-                       L38 13
-                       Z"
-                    fill="#e5e7eb"
-                    stroke="#9ca3af"
-                    stroke-width="1.2"
-                  />
-                </g>
-
-                <!-- SCREWDRIVER -->
-                <g transform="translate(70,20) rotate(45 0 40)">
-                  <rect x="-4" y="8" width="8" height="30" rx="2" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
-                  <path
-                    d="M0 4 L4 8 L-4 8 Z"
-                    fill="#cbd5f5"
-                    stroke="#9ca3af"
-                    stroke-width="1"
-                  />
-                  <rect x="-7" y="32" width="14" height="20" rx="5" fill="url(#toolHandle)" stroke="#9a3412" stroke-width="1.1"/>
-                </g>
-
-                <!-- WIZARD HAT -->
-                <ellipse cx="60" cy="78" rx="22" ry="6" fill="rgba(15,23,42,0.7)"/>
-                <ellipse cx="60" cy="72" rx="26" ry="9" fill="url(#brimGradient)"/>
-                <path
-                  d="M68 24
-                     C55 30, 48 42, 45 52
-                     C43.5 56, 43 60, 42.5 62.5
-                     L40 70
-                     L80 70
-                     L77 60
-                     C74.5 50, 72 40, 68 24Z"
-                  fill="url(#hatGradient)"
-                  stroke="#1d4ed8"
-                  stroke-width="1.3"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M53 38
-                     C50 44, 48 48.5, 47 54"
-                  fill="none"
-                  stroke="#bfdbfe"
-                  stroke-width="1.1"
-                  stroke-linecap="round"
-                  opacity="0.8"
-                />
-                <rect
-                  x="51"
-                  y="56"
-                  width="18"
-                  height="4.7"
-                  rx="2.35"
-                  fill="#facc15"
-                />
-                <circle cx="60" cy="58.3" r="2" fill="#fef9c3"/>
-                <circle cx="50" cy="32" r="1.4" fill="#e0f2fe"/>
-                <circle cx="70" cy="30" r="1.4" fill="#e0f2fe"/>
-                <circle cx="64" cy="44" r="1.2" fill="#e0f2fe"/>
-
-                <!-- BOLT -->
-                <g class="bolt" transform="translate(78,18)">
-                  <path
-                    d="M0 0
-                       L6 -10
-                       L4 -2
-                       L10 -2
-                       L2 12
-                       L4 2
-                       Z"
-                    fill="#fef9c3"
-                    stroke="#eab308"
-                    stroke-width="1"
-                  />
-                </g>
-
-                <!-- SPARKLE -->
-                <g class="sparkle" transform="translate(42,28)">
-                  <circle cx="0" cy="0" r="2.2" fill="#e0f2fe"/>
-                  <line x1="-5" y1="0" x2="-9" y2="0" stroke="#e0f2fe" stroke-width="1.1"/>
-                  <line x1="5" y1="0" x2="9" y2="0" stroke="#e0f2fe" stroke-width="1.1"/>
-                  <line x1="0" y1="-5" x2="0" y2="-9" stroke="#e0f2fe" stroke-width="1.1"/>
-                  <line x1="0" y1="5" x2="0" y2="9" stroke="#e0f2fe" stroke-width="1.1"/>
-                </g>
-              </svg>
-            </div>
-          </a>
-
-          <div class="banner-title">About WizardKnows</div>
+          <div class="wand">
+            <div class="wand-core"></div>
+            <div class="sparkle s1"></div>
+            <div class="sparkle s2"></div>
+            <div class="sparkle s3"></div>
+            <div class="sparkle s4"></div>
+          </div>
         </div>
+        <div class="brand-text">
+          <h1>Wizard Knows</h1>
+          <p>Safe, smart help for your home appliances.</p>
+        </div>
+      </div>
 
-        <a href="index.html" class="home-button">← Back to Home</a>
-      </header>
-
-      <main>
-        <section class="card">
-          <h2>About WizardKnows</h2>
-          <p>
-            Today’s products don’t last as they did in the past. Most major appliances come with just a one‑year warranty, and many start breaking down after only 5–6 years. We’re expected to live with frequent failures, costly service calls, and a constant cycle of replacement. That’s hard on our wallets, and even harder on the environment.
-          </p>
-          <p>
-            WizardKnows.com was created to push back against that cycle.
-          </p>
-          <p>
-            We help everyday DIYers and curious consumers understand how their appliances and household products actually work, and how to repair them when something goes wrong. Instead of sending a “broken” product straight to the curb, you can get clear explanations, troubleshooting guidance, and step‑by‑step help.
-          </p>
-          <p>
-            At the core of the site is Wizard, an AI‑powered repair guide designed to turn confusing technical issues into plain language you can act on. Wizard helps you diagnose common problems, explore safe repair options, and decide when you can handle it yourself and when you truly need a professional.
-          </p>
-          <p>
-            Every time you repair instead of replace, you give an appliance a second life instead of a shallow grave. Most of these products will never be meaningfully recycled; they’re buried, abandoned, or left to rust as wasted material. By keeping them working longer, we cut down on needless manufacturing, wasted money, and the constant flow of “junk” to landfills and empty lots.
-          </p>
-          <p>
-            Manufacturers often promote energy efficiency, but true sustainability also means durability, repairability, and honest information. WizardKnows stands with consumers who want products that work, last, and don’t have to be thrown away so quickly.
-          </p>
-        </section>
-
-        <section class="card">
-          <h2>Our Mission</h2>
-          <p>
-            To empower people to understand, maintain, and repair the products they own. Let’s extend their lifespan, save money, and fight the throwaway culture that buries usable materials in landfills instead of keeping them in everyday use.
-          </p>
-        </section>
-      </main>
-
-      <footer class="site-footer">
-        Contact us at <a href="mailto:wizardknows@outlook.com">wizardknows@outlook.com</a>
-      </footer>
-
+      <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="about.html">About</a>
+        <!-- You can add more links later, e.g. FAQ, Blog, etc. -->
+      </nav>
     </div>
-  </div>
+  </header>
+
+  <main>
+    <div class="content">
+      <!-- Left: Wizard Chat -->
+      <section class="card">
+        <h2>Wizard Chat – One‑on‑One Product Help</h2>
+        <p class="subtitle">
+          Describe your appliance issue in plain language. Wizard will walk you
+          through safe, step‑by‑step checks before recommending tools or parts.
+        </p>
+
+        <div class="chat-container">
+          <div id="chat-log" class="chat-log" aria-live="polite"></div>
+
+          <form id="chat-form" class="chat-form">
+            <div class="chat-input-row">
+              <textarea
+                id="user-input"
+                rows="2"
+                placeholder="Example: “Top‑mount refrigerator, freezer is cold but fresh‑food section is warm.”"
+                required
+              ></textarea>
+              <button type="submit" class="send-btn" id="send-btn">
+                <span class="icon">➤</span>
+                Ask Wizard
+              </button>
+            </div>
+            <div class="helper-text">
+              <strong>Safety first:</strong> Wizard will not walk you through
+              sealed‑system work, bypassing safeties, or unsafe electrical /
+              gas steps.
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right: Community (Coming Soon) -->
+      <section class="card">
+        <span class="pill">
+          <span class="dot"></span>
+          Community Coming Soon
+        </span>
+        <h2>Community Discussion (Coming Soon)</h2>
+        <p class="subtitle">
+          A place to compare notes with other owners, share photos, and learn
+          from pro‑grade troubleshooting—without replacing safety rules with
+          random internet advice.
+        </p>
+
+        <ul>
+          <li>Post your appliance symptoms and what you’ve already tried.</li>
+          <li>Get feedback from others with the same model or issue.</li>
+          <li>See what Wizard can pull from its knowledge base for your case.</li>
+        </ul>
+
+        <p class="subtitle" style="margin-top: 0.75rem;">
+          For now, Wizard Chat is the best way to get guided, step‑by‑step help.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>© <span id="year"></span> Wizard Knows. All rights reserved.</div>
+      <div>
+        Contact us at
+        <a href="mailto:wizardknows@outlook.com">wizardknows@outlook.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
+
+    const chatLog = document.getElementById('chat-log');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const yearSpan = document.getElementById('year');
+
+    if (yearSpan) {
+      yearSpan.textContent = new Date().getFullYear();
+    }
+
+    // Conversation history to send to backend for multi-turn context
+    const conversation = [];
+
+    function appendMessage(role, text) {
+      const div = document.createElement('div');
+      div.classList.add('msg', role);
+      div.textContent = text;
+      chatLog.appendChild(div);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Initial system hint for user (not sent to model)
+    appendMessage(
+      'system',
+      'Tip: Start with product type, brand, model (if known), and what the appliance is doing or not doing.'
+    );
+
+    chatForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      // Show user message
+      appendMessage('user', text);
+
+      // Track conversation for backend
+      conversation.push({ role: 'user', content: text });
+
+      userInput.value = '';
+      userInput.disabled = true;
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Thinking...';
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: conversation,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        const reply = data.reply || 'Sorry, something went wrong on the server.';
+        appendMessage('assistant', reply);
+
+        // Add assistant reply to conversation history
+        conversation.push({ role: 'assistant', content: reply });
+      } catch (err) {
+        console.error(err);
+        appendMessage(
+          'assistant',
+          'Wizard ran into a problem reaching the server. Please check your internet connection and try again in a moment.'
+        );
+      } finally {
+        userInput.disabled = false;
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Ask Wizard';
+        userInput.focus();
+      }
+    });
+  </script>
 </body>
 </html>
-```
