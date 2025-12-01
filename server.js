@@ -8,15 +8,33 @@ const fs = require('fs');
 const path = require('path');
 
 // --- Postgres (Supabase) connection ---
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // required for Supabase
-});
-
-// Helper to log each chat turn into Supabase
-async function logChatTurn({ sessionId, userMessage, assistantReply, historyLength }) {
-  const client = await pool.connect();
+// Make this SAFE: if DATABASE_URL is missing or invalid, we just skip DB logging.
+let pool = null;
+if (process.env.DATABASE_URL) {
   try {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // required for Supabase
+    });
+    console.log('Postgres pool initialized');
+  } catch (err) {
+    console.error('Failed to initialize Postgres pool:', err);
+  }
+} else {
+  console.warn('DATABASE_URL is not set; DB logging will be disabled');
+}
+
+// Helper to log each chat turn into Supabase (best effort, never crashes the app)
+async function logChatTurn({ sessionId, userMessage, assistantReply, historyLength }) {
+  // If we have no pool (no DATABASE_URL or init error), just skip logging
+  if (!pool) {
+    return;
+  }
+
+  let client;
+  try {
+    client = await pool.connect();
+
     // Ensure the session row exists
     await client.query(
       `INSERT INTO chat_sessions (id)
@@ -34,7 +52,9 @@ async function logChatTurn({ sessionId, userMessage, assistantReply, historyLeng
   } catch (err) {
     console.error('Failed to log chat turn:', err);
   } finally {
-    client.release();
+    if (client) {
+      client.release();
+    }
   }
 }
 
@@ -516,7 +536,7 @@ app.post('/chat', async (req, res) => {
     };
     console.log('CHAT_LOG', JSON.stringify(logEntry));
 
-    // NEW: persist this turn to Supabase (do not block the response)
+    // Best-effort logging; failure will not break the response
     logChatTurn({
       sessionId,
       userMessage,
