@@ -32,31 +32,6 @@
       text-decoration: underline;
     }
 
-    /* Lightning overlay that flashes over everything */
-    .lightning-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 50;
-      opacity: 0;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.9) 0, transparent 55%),
-        radial-gradient(circle at 80% 0%, rgba(227, 233, 255, 0.9) 0, transparent 50%);
-      mix-blend-mode: screen;
-    }
-
-    .lightning-overlay.flash {
-      animation: lightning-flash 0.45s ease-out;
-    }
-
-    @keyframes lightning-flash {
-      0%   { opacity: 0; }
-      12%  { opacity: 1; }
-      35%  { opacity: 0.25; }
-      55%  { opacity: 0.85; }
-      100% { opacity: 0; }
-    }
-
     .page-wrapper {
       min-height: 100vh;
       display: flex;
@@ -383,9 +358,6 @@
   </style>
 </head>
 <body>
-  <!-- Lightning effect overlay -->
-  <div class="lightning-overlay" aria-hidden="true"></div>
-
   <div class="page-wrapper">
     <div class="main-container">
 
@@ -563,7 +535,7 @@
     </div>
   </div>
 
-  <!-- Chat + lightning JS -->
+  <!-- Chat JS -->
   <script>
     const BACKEND_URL = 'https://wizardknows.onrender.com/chat';
 
@@ -577,7 +549,6 @@
     const inputEl = document.getElementById('ai-user-input');
     const sendBtn = document.getElementById('ai-send-btn');
     const chatWizardIcon = document.querySelector('.chat-wizard-icon');
-    const lightningEl = document.querySelector('.lightning-overlay');
 
     function appendMessage(sender, text) {
       const msgDiv = document.createElement('div');
@@ -640,29 +611,6 @@
     inputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') sendMessage();
     });
-
-    // --- Lightning logic for page background ---
-    function triggerLightning() {
-      if (!lightningEl) return;
-      lightningEl.classList.add('flash');
-      setTimeout(() => {
-        lightningEl.classList.remove('flash');
-      }, 500);
-    }
-
-    function scheduleLightning() {
-      if (!lightningEl) return;
-      const minDelay = 15000;
-      const maxDelay = 45000;
-      const delay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-
-      setTimeout(() => {
-        triggerLightning();
-        scheduleLightning();
-      }, delay);
-    }
-
-    scheduleLightning();
   </script>
 </body>
 </html>
