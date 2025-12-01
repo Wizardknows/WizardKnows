@@ -3,8 +3,40 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
+const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
+
+// --- Postgres (Supabase) connection ---
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }, // required for Supabase
+});
+
+// Helper to log each chat turn into Supabase
+async function logChatTurn({ sessionId, userMessage, assistantReply, historyLength }) {
+  const client = await pool.connect();
+  try {
+    // Ensure the session row exists
+    await client.query(
+      `INSERT INTO chat_sessions (id)
+       VALUES ($1)
+       ON CONFLICT (id) DO NOTHING`,
+      [sessionId]
+    );
+
+    // Insert this chat turn
+    await client.query(
+      `INSERT INTO chat_turns (session_id, user_message, assistant_reply, history_length)
+       VALUES ($1, $2, $3, $4)`,
+      [sessionId, userMessage, assistantReply, historyLength]
+    );
+  } catch (err) {
+    console.error('Failed to log chat turn:', err);
+  } finally {
+    client.release();
+  }
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -272,9 +304,8 @@ function decodeElectroluxSerial(serialRaw) {
   const productDescription = productMap[productCode] || 'Unknown product type';
 
   const yearDigit = /^\d$/.test(yearDigitChar) ? parseInt(yearDigitChar, 10) : null;
-  const possibleYears = yearDigit === null
-    ? null
-    : [2000 + yearDigit, 2010 + yearDigit, 2020 + yearDigit];
+  const possibleYears =
+    yearDigit === null ? null : [2000 + yearDigit, 2010 + yearDigit, 2020 + yearDigit];
 
   let week = null;
   if (/^\d{2}$/.test(weekStr)) {
@@ -409,14 +440,14 @@ app.post('/chat', async (req, res) => {
               `Product type: ${decoded.productDescription} (code ${decoded.productCode}). `;
 
             if (decoded.yearDigit !== null && decoded.possibleYears) {
-  note +=
-    `Year digit: ${decoded.yearDigit}. This digit repeats every 10 years. ` +
-    `Possible manufacture years are: ${decoded.possibleYears.join(', ')}. ` +
-    `You MUST NOT select a single exact year from this list unless the user clearly gives contextual information (like when they bought the product). ` +
-    `Always present the manufacture year as a set of possibilities or a range, and clearly say it is an estimate. `;
-} else {
-  note += 'Year digit: unknown or non-numeric. ';
-}
+              note +=
+                `Year digit: ${decoded.yearDigit}. This digit repeats every 10 years. ` +
+                `Possible manufacture years are: ${decoded.possibleYears.join(', ')}. ` +
+                `You MUST NOT select a single exact year from this list unless the user clearly gives contextual information (like when they bought the product). ` +
+                `Always present the manufacture year as a set of possibilities or a range, and clearly say it is an estimate. `;
+            } else {
+              note += 'Year digit: unknown or non-numeric. ';
+            }
 
             if (decoded.week) {
               note += `Production week: ${decoded.week}. `;
@@ -427,11 +458,14 @@ app.post('/chat', async (req, res) => {
             note += `Sequence number: ${decoded.sequence}. `;
 
             if (decoded.isAnomalousPrefix) {
-              note += 'Leading characters match a known sourced/anomalous prefix; treat decoding cautiously. ';
+              note +=
+                'Leading characters match a known sourced/anomalous prefix; treat decoding cautiously. ';
             }
 
-            note += 'Use this ONLY as hidden context to better infer product type, age range, and plant. ';
-            note += 'Do NOT mention serial decoding or these internal details to the user unless they explicitly ask about serial numbers, age, or manufacturing location.';
+            note +=
+              'Use this ONLY as hidden context to better infer product type, age range, and plant. ';
+            note +=
+              'Do NOT mention serial decoding or these internal details to the user unless they explicitly ask about serial numbers, age, or manufacturing location.';
 
             serialContextNote = note;
           }
@@ -445,9 +479,7 @@ app.post('/chat', async (req, res) => {
     const extraKnowledge = getRelevantKnowledge(userMessage, history);
 
     // Build messages for OpenAI
-    const messages = [
-      { role: 'system', content: systemPrompt },
-    ];
+    const messages = [{ role: 'system', content: systemPrompt }];
 
     if (serialContextNote) {
       messages.push({
@@ -483,6 +515,14 @@ app.post('/chat', async (req, res) => {
       historyLength: history.length,
     };
     console.log('CHAT_LOG', JSON.stringify(logEntry));
+
+    // NEW: persist this turn to Supabase (do not block the response)
+    logChatTurn({
+      sessionId,
+      userMessage,
+      assistantReply: answer,
+      historyLength: history.length,
+    });
 
     res.json({ reply: answer });
   } catch (err) {
