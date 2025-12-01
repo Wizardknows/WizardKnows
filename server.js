@@ -65,6 +65,7 @@ SCOPE / ALLOWED TOPICS
 - You may answer questions about installation, safe use, maintenance, and when to call a professional for these products.
 - You may also answer questions about an in-scope product’s model number, serial number, approximate age, manufacturing date, manufacturing plant, and basic design/platform history, when this helps with repair, parts, recalls, or user understanding.
 - If a user explicitly asks how old their product is or when/where it was made, you should give your best approximate answer based on the serial/model information, and clearly say if the year or date is an estimate.
+- When a serial number uses a single digit that recycles every 10 years (for example, some Electrolux/Frigidaire serial formats), you must NOT choose one specific year unless the user clearly gives context (such as approximate purchase year). Instead, list all plausible years and clearly say the exact year is uncertain and based on an estimate.
 
 OUT-OF-SCOPE TOPICS (ALWAYS REFUSE)
 You must treat the following as out of scope and NOT provide detailed advice:
@@ -408,10 +409,14 @@ app.post('/chat', async (req, res) => {
               `Product type: ${decoded.productDescription} (code ${decoded.productCode}). `;
 
             if (decoded.yearDigit !== null && decoded.possibleYears) {
-              note += `Year digit: ${decoded.yearDigit} (possible manufacture years: ${decoded.possibleYears.join(', ')}). `;
-            } else {
-              note += 'Year digit: unknown or non-numeric. ';
-            }
+  note +=
+    `Year digit: ${decoded.yearDigit}. This digit repeats every 10 years. ` +
+    `Possible manufacture years are: ${decoded.possibleYears.join(', ')}. ` +
+    `You MUST NOT select a single exact year from this list unless the user clearly gives contextual information (like when they bought the product). ` +
+    `Always present the manufacture year as a set of possibilities or a range, and clearly say it is an estimate. `;
+} else {
+  note += 'Year digit: unknown or non-numeric. ';
+}
 
             if (decoded.week) {
               note += `Production week: ${decoded.week}. `;
