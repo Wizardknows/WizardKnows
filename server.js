@@ -3,9 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
-const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // --- Postgres (Supabase) connection ---
 // Make this SAFE: if DATABASE_URL is missing or invalid, we just skip DB logging.
@@ -24,37 +25,46 @@ if (process.env.DATABASE_URL) {
   console.warn('DATABASE_URL is not set; DB logging will be disabled');
 }
 
-// Helper to log each chat turn into Supabase (best effort, never crashes the app)
+// Helper to log each chat turn into Supabase via REST (best effort, never crashes the app)
 async function logChatTurn({ sessionId, userMessage, assistantReply, historyLength }) {
-  // If we have no pool (no DATABASE_URL or init error), just skip logging
-  if (!pool) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.warn('Supabase env vars not set; skipping DB logging');
     return;
   }
 
-  let client;
   try {
-    client = await pool.connect();
+    // 1) Ensure the session exists (ignore duplicates)
+    await fetch(`${SUPABASE_URL}/rest/v1/chat_sessions`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=ignore-duplicates,return=minimal',
+      },
+      body: JSON.stringify([{ id: sessionId }]),
+    });
 
-    // Ensure the session row exists
-    await client.query(
-      `INSERT INTO chat_sessions (id)
-       VALUES ($1)
-       ON CONFLICT (id) DO NOTHING`,
-      [sessionId]
-    );
-
-    // Insert this chat turn
-    await client.query(
-      `INSERT INTO chat_turns (session_id, user_message, assistant_reply, history_length)
-       VALUES ($1, $2, $3, $4)`,
-      [sessionId, userMessage, assistantReply, historyLength]
-    );
+    // 2) Insert the chat turn
+    await fetch(`${SUPABASE_URL}/rest/v1/chat_turns`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify([
+        {
+          session_id: sessionId,
+          user_message: userMessage,
+          assistant_reply: assistantReply,
+          history_length: historyLength,
+        },
+      ]),
+    });
   } catch (err) {
-    console.error('Failed to log chat turn:', err);
-  } finally {
-    if (client) {
-      client.release();
-    }
+    console.error('Failed to log chat turn via Supabase REST:', err);
   }
 }
 
@@ -536,13 +546,13 @@ app.post('/chat', async (req, res) => {
     };
     console.log('CHAT_LOG', JSON.stringify(logEntry));
 
-    // Best-effort logging; failure will not break the response
-    logChatTurn({
-      sessionId,
-      userMessage,
-      assistantReply: answer,
-      historyLength: history.length,
-    });
+    // After getting `answer` from OpenAI and logging CHAT_LOG
+logChatTurn({
+  sessionId,
+  userMessage,
+  assistantReply: answer,
+  historyLength: history.length,
+});
 
     res.json({ reply: answer });
   } catch (err) {
