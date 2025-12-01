@@ -203,6 +203,102 @@ CONVERSATION MEMORY
 - Use the previous messages in the conversation as context for your replies.
 - Do NOT ask the user to repeat the product type, brand, model, or symptoms they have already clearly given, unless you genuinely need clarification.
 `;
+
+// ---- Electrolux / Frigidaire serial decoder helper ----
+function decodeElectroluxSerial(serialRaw) {
+  if (!serialRaw) return null;
+
+  const cleaned = serialRaw
+    .toString()
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+
+  // Expect 10-character serials
+  if (cleaned.length !== 10) return null;
+
+  const plantCode = cleaned[0];
+  const productCode = cleaned[1];
+  const yearDigitChar = cleaned[2];
+  const weekStr = cleaned.slice(3, 5);
+  const sequence = cleaned.slice(5);
+
+  const plantMap = {
+    A: 'Memphis, TN (USA)',
+    B: 'Anderson, SC (USA)',
+    K: 'K-code plant (Solaro, Italy for dishwashers; China for laundry/AC/dehumidifier)',
+    L: 'Greenville, MI (USA)',
+    N: 'Quebec, Canada',
+    O: 'Replacement model/serial tag (original label replaced)',
+    T: 'Kinston, NC (USA)',
+    V: 'Springfield, TN (USA)',
+    W: 'St. Cloud, MN (USA)',
+    X: 'Webster City, IA (USA)',
+    '1': 'Rayong, Thailand',
+    '2': 'Porcia, Italy (compact washer) or Siewierz, Poland (compact dryer)',
+    '4': 'Juarez, Mexico'
+  };
+
+  const outsourcedCodes = new Set(['C', 'D', 'E', 'G', 'H', 'I', 'J', 'P', 'Q', 'R', 'S', '3', '7', '8', '9']);
+
+  let plantDescription;
+  if (plantMap[plantCode]) {
+    plantDescription = plantMap[plantCode];
+  } else if (outsourcedCodes.has(plantCode)) {
+    plantDescription = 'Outsourced / contract production (non-core Electrolux plant)';
+  } else {
+    plantDescription = 'Unknown plant code';
+  }
+
+  const productMap = {
+    A: 'Refrigerator',
+    B: 'Freezer',
+    C: 'Washer',
+    D: 'Dryer',
+    E: 'Laundry center (stacked laundry combo)',
+    F: 'Range',
+    G: 'Microwave',
+    H: 'Dishwasher',
+    K: 'Room air conditioner or specialty refrigeration',
+    J: 'Trash compactor',
+    L: 'Outdoor grill',
+    N: 'Dehumidifier',
+    R: 'Ice machine / beverage center'
+  };
+
+  const productDescription = productMap[productCode] || 'Unknown product type';
+
+  const yearDigit = /^\d$/.test(yearDigitChar) ? parseInt(yearDigitChar, 10) : null;
+  const possibleYears = yearDigit === null
+    ? null
+    : [2000 + yearDigit, 2010 + yearDigit, 2020 + yearDigit];
+
+  let week = null;
+  if (/^\d{2}$/.test(weekStr)) {
+    const w = parseInt(weekStr, 10);
+    if (w >= 1 && w <= 52) {
+      week = w;
+    }
+  }
+
+  const anomalousPrefixes = ['AA', 'AB', 'ID', 'IE', '1P', '1V', 'EA', 'ZA'];
+  const leadingPair = cleaned.slice(0, 2);
+  const isAnomalousPrefix = anomalousPrefixes.includes(leadingPair);
+
+  return {
+    raw: cleaned,
+    plantCode,
+    plantDescription,
+    productCode,
+    productDescription,
+    yearDigit,
+    possibleYears,
+    week,
+    sequence,
+    isAnomalousPrefix
+  };
+}
+
 // --- Simple knowledge loading and matching ---
 
 const knowledge = {};
@@ -280,33 +376,95 @@ loadKnowledge();
 app.post('/chat', async (req, res) => {
   try {
     const userMessage = (req.body.message || '').toString();
-  const history = Array.isArray(req.body.history) ? req.body.history : [];
-  const sessionId = (req.body.sessionId || 'no-session').toString();
+    const history = Array.isArray(req.body.history) ? req.body.history : [];
+    const sessionId = (req.body.sessionId || 'no-session').toString();
 
-  // Decide if we should attach any knowledge
-  const extraKnowledge = getRelevantKnowledge(userMessage, history);
+    // Try to infer Electrolux / Frigidaire serial context
+    let serialContextNote = null;
+    try {
+      const combinedPieces = [];
+      if (userMessage) combinedPieces.push(userMessage);
+      if (Array.isArray(history)) {
+        const lastFew = history.slice(-6);
+        for (const m of lastFew) {
+          if (m && typeof m.content === 'string') {
+            combinedPieces.push(m.content);
+          }
+        }
+      }
+      const combinedText = combinedPieces.join(' ');
 
-  // Build messages for OpenAI
-  const messages = [
-    { role: 'system', content: systemPrompt },
-  ];
+      const brandRegex = /(electrolux|frigidaire)/i;
+      if (brandRegex.test(combinedText)) {
+        const serialMatches = combinedText.match(/\b[A-Za-z0-9]{10}\b/g) || [];
+        if (serialMatches.length > 0) {
+          const decoded = decodeElectroluxSerial(serialMatches[0]);
+          if (decoded) {
+            let note =
+              `Internal note: possible Electrolux/Frigidaire 10-character serial detected ("${decoded.raw}"). ` +
+              `Plant: ${decoded.plantDescription} (code ${decoded.plantCode}). ` +
+              `Product type: ${decoded.productDescription} (code ${decoded.productCode}). `;
 
-  if (extraKnowledge) {
-    messages.push({
-      role: 'system',
-      content:
-        "Internal reference for an Electrolux/Frigidaire polymer-tub dishwasher platform built in Kinston, NC. Use it only if it matches the user's product. Do NOT say you have this document; just use its details when relevant:\n\n" +
-        extraKnowledge,
+            if (decoded.yearDigit !== null && decoded.possibleYears) {
+              note += `Year digit: ${decoded.yearDigit} (possible manufacture years: ${decoded.possibleYears.join(', ')}). `;
+            } else {
+              note += 'Year digit: unknown or non-numeric. ';
+            }
+
+            if (decoded.week) {
+              note += `Production week: ${decoded.week}. `;
+            } else {
+              note += 'Production week: unknown or out of 01–52 range. ';
+            }
+
+            note += `Sequence number: ${decoded.sequence}. `;
+
+            if (decoded.isAnomalousPrefix) {
+              note += 'Leading characters match a known sourced/anomalous prefix; treat decoding cautiously. ';
+            }
+
+            note += 'Use this ONLY as hidden context to better infer product type, age range, and plant. ';
+            note += 'Do NOT mention serial decoding or these internal details to the user unless they explicitly ask about serial numbers, age, or manufacturing location.';
+
+            serialContextNote = note;
+          }
+        }
+      }
+    } catch (serialErr) {
+      console.warn('Serial decoding error (non-fatal):', serialErr.message);
+    }
+
+    // Decide if we should attach any document knowledge
+    const extraKnowledge = getRelevantKnowledge(userMessage, history);
+
+    // Build messages for OpenAI
+    const messages = [
+      { role: 'system', content: systemPrompt },
+    ];
+
+    if (serialContextNote) {
+      messages.push({
+        role: 'system',
+        content: serialContextNote,
+      });
+    }
+
+    if (extraKnowledge) {
+      messages.push({
+        role: 'system',
+        content:
+          "Internal reference for an Electrolux/Frigidaire polymer-tub dishwasher platform built in Kinston, NC. Use it only if it matches the user's product. Do NOT say you have this document; just use its details when relevant:\n\n" +
+          extraKnowledge,
+      });
+    }
+
+    // Then append the existing conversation history (which already includes the latest user message)
+    messages.push(...history);
+
+    const response = await client.chat.completions.create({
+      model: 'gpt-4.1-mini',
+      messages,
     });
-  }
-
-  // Then append the existing conversation history (which already includes the latest user message)
-  messages.push(...history);
-
-  const response = await client.chat.completions.create({
-    model: 'gpt-4.1-mini',
-    messages,
-  });
 
     const answer = response.choices[0].message.content;
 
