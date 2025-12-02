@@ -1,0 +1,11 @@
+{
+  "sessionId": "manual-test-session",
+  "turns": [
+    {
+      "ts": "2025-12-01T21:52:00.540Z",
+      "user_message": "Hello from Supabase",
+      "assistant_reply": "Hello back",
+      "history_length": 0
+    }
+  ]
+}

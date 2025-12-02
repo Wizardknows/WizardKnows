@@ -1,0 +1,23 @@
+{
+  "sessionId": "2aef2250-0e2f-4e7f-a55a-09962edcde4c",
+  "turns": [
+    {
+      "ts": "2025-12-01T23:05:09.977Z",
+      "user_message": "My refrigerator is running to long.",
+      "assistant_reply": "Hi, I'm Wizard. When you say your refrigerator is running too long, do you mean the compressor or the cooling system runs almost continuously without stopping?",
+      "history_length": 1
+    },
+    {
+      "ts": "2025-12-01T23:05:42.878Z",
+      "user_message": "Yes its always humming from the back and fan is always on inside.",
+      "assistant_reply": "Thanks. Let’s start with a simple check: Do you hear the compressor humming steadily, or does it sometimes stop and start?",
+      "history_length": 3
+    },
+    {
+      "ts": "2025-12-01T23:05:54.775Z",
+      "user_message": "always",
+      "assistant_reply": "Okay. Is the refrigerator located in a warm or enclosed spot, like a tight kitchen corner or near a heat source?",
+      "history_length": 5
+    }
+  ]
+}

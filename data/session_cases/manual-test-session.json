@@ -1,0 +1,16 @@
+{
+  "session_id": "manual-test-session",
+  "product_type": "other_or_unknown",
+  "brand": null,
+  "model": null,
+  "symptoms": [],
+  "error_codes": [],
+  "attempted_steps": [],
+  "suspected_causes": [],
+  "root_cause": null,
+  "fix_steps": [],
+  "warnings": [],
+  "resolution_status": "no_clear_resolution",
+  "tags": [],
+  "notes": "No appliance or repair information discussed in the session."
+}

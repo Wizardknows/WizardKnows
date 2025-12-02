@@ -1,0 +1,27 @@
+{
+  "session_id": "2aef2250-0e2f-4e7f-a55a-09962edcde4c",
+  "product_type": "refrigerator",
+  "brand": null,
+  "model": null,
+  "symptoms": [
+    "refrigerator runs too long",
+    "compressor humming continuously",
+    "fan always on inside"
+  ],
+  "error_codes": [],
+  "attempted_steps": [
+    "Wizard asked if compressor hums steadily or stops and starts",
+    "Wizard asked about refrigerator placement in warm or enclosed spot"
+  ],
+  "suspected_causes": [],
+  "root_cause": null,
+  "fix_steps": [],
+  "warnings": [],
+  "resolution_status": "no_clear_resolution",
+  "tags": [
+    "refrigerator",
+    "compressor_runs_long",
+    "continuous_humming"
+  ],
+  "notes": "User reports continuous compressor humming and fan on inside with refrigerator running for too long. Wizard queried operational behavior and placement but no diagnosis or fix yet."
+}

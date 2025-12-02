@@ -1,0 +1,28 @@
+{
+  "session_id": "3bd8c8a5-62f7-4e67-bd64-11f0a6d3eeec",
+  "product_type": "dishwasher",
+  "brand": null,
+  "model": null,
+  "symptoms": [
+    "Door snaps closed on user's hand"
+  ],
+  "error_codes": [],
+  "attempted_steps": [
+    "Wizard asked if door snaps shut suddenly from a small push or only with more force"
+  ],
+  "suspected_causes": [
+    "Door latch or spring might be too strong or misaligned"
+  ],
+  "root_cause": null,
+  "fix_steps": [],
+  "warnings": [
+    "Be cautious to avoid injury with door snapping shut"
+  ],
+  "resolution_status": "no_clear_resolution",
+  "tags": [
+    "door latch",
+    "door snap",
+    "physical injury risk"
+  ],
+  "notes": "User describes dishwasher door snapping shut on hand, causing a 'biting' sensation. Wizard suspects mechanical issue with door latch or spring, but no fix confirmed yet."
+}

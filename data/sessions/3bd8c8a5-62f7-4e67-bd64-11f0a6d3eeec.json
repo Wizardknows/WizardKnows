@@ -1,0 +1,17 @@
+{
+  "sessionId": "3bd8c8a5-62f7-4e67-bd64-11f0a6d3eeec",
+  "turns": [
+    {
+      "ts": "2025-12-01T23:04:13.222Z",
+      "user_message": "My dishwasher keeps trying to bite me.",
+      "assistant_reply": "Hi, I’m Wizard. Your dishwasher “biting” sounds unusual—can you describe what you mean? Is it shocking you when you touch the door or controls, or something else?",
+      "history_length": 1
+    },
+    {
+      "ts": "2025-12-01T23:04:39.557Z",
+      "user_message": "Door snaps closed on my hand.",
+      "assistant_reply": "Thanks for explaining. The door latch or spring might be too strong or misaligned. \n\nDo you notice if the door snaps shut suddenly from just a small push, or only when you try to close it more firmly?",
+      "history_length": 3
+    }
+  ]
+}
