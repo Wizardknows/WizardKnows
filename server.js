@@ -8,6 +8,11 @@ const path = require('path');
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// --- Token / history limits (NEW) ---
+const MAX_HISTORY_TURNS = 8;          // only send last 8 messages of history
+const MAX_KNOWLEDGE_CHARS = 6000;     // truncate long knowledge docs
+const MAX_COMPLETION_TOKENS = 400;    // cap length of Wizard's replies
+
 // --- Postgres (Supabase) connection ---
 // Make this SAFE: if DATABASE_URL is missing or invalid, we just skip DB logging.
 let pool = null;
@@ -37,10 +42,10 @@ async function logChatTurn({ sessionId, userMessage, assistantReply, historyLeng
     await fetch(`${SUPABASE_URL}/rest/v1/chat_sessions`, {
       method: 'POST',
       headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json',
-        'Prefer': 'resolution=ignore-duplicates,return=minimal',
+        Prefer: 'resolution=ignore-duplicates,return=minimal',
       },
       body: JSON.stringify([{ id: sessionId }]),
     });
@@ -49,10 +54,10 @@ async function logChatTurn({ sessionId, userMessage, assistantReply, historyLeng
     await fetch(`${SUPABASE_URL}/rest/v1/chat_turns`, {
       method: 'POST',
       headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
+        Prefer: 'return=minimal',
       },
       body: JSON.stringify([
         {
@@ -232,6 +237,7 @@ STYLE AND COMMUNICATION
 - Do NOT explain your strategy (for example, do not mention that you are asking simple checks one at a time); just ask the questions naturally.
 - Assume the user can scroll up to reread earlier messages; do not recap their description.
 - Aim for responses the user can read in under 20–30 seconds.
+- Default to concise answers: usually 3–6 short paragraphs or a short numbered list. (Keep replies compact.)  // <– slight extra nudge for brevity
 
 DIAGNOSIS AND SPECULATION
 - Do NOT declare a specific failed part (for example, "the control board is bad") until the user has done checks that clearly point to that part.
@@ -301,7 +307,7 @@ function decodeElectroluxSerial(serialRaw) {
     X: 'Webster City, IA (USA)',
     '1': 'Rayong, Thailand',
     '2': 'Porcia, Italy (compact washer) or Siewierz, Poland (compact dryer)',
-    '4': 'Juarez, Mexico'
+    '4': 'Juarez, Mexico',
   };
 
   const outsourcedCodes = new Set(['C', 'D', 'E', 'G', 'H', 'I', 'J', 'P', 'Q', 'R', 'S', '3', '7', '8', '9']);
@@ -328,7 +334,7 @@ function decodeElectroluxSerial(serialRaw) {
     J: 'Trash compactor',
     L: 'Outdoor grill',
     N: 'Dehumidifier',
-    R: 'Ice machine / beverage center'
+    R: 'Ice machine / beverage center',
   };
 
   const productDescription = productMap[productCode] || 'Unknown product type';
@@ -359,7 +365,7 @@ function decodeElectroluxSerial(serialRaw) {
     possibleYears,
     week,
     sequence,
-    isAnomalousPrefix
+    isAnomalousPrefix,
   };
 }
 
@@ -427,7 +433,8 @@ function getRelevantKnowledge(userMessage, history) {
     mentionsDishwasher &&
     (mentionsBrand || mentionsPlatform)
   ) {
-    return knowledge.efPolymerKinston;
+    // Truncate long knowledge to save tokens (NEW)
+    return knowledge.efPolymerKinston.slice(0, MAX_KNOWLEDGE_CHARS);
   }
 
   return null;
@@ -440,8 +447,11 @@ loadKnowledge();
 app.post('/chat', async (req, res) => {
   try {
     const userMessage = (req.body.message || '').toString();
-    const history = Array.isArray(req.body.history) ? req.body.history : [];
+    const rawHistory = Array.isArray(req.body.history) ? req.body.history : [];
     const sessionId = (req.body.sessionId || 'no-session').toString();
+
+    // Trim history to last N turns to save tokens (NEW)
+    const history = rawHistory.slice(-MAX_HISTORY_TURNS);
 
     // Try to infer Electrolux / Frigidaire serial context
     let serialContextNote = null;
@@ -522,20 +532,23 @@ app.post('/chat', async (req, res) => {
       messages.push({
         role: 'system',
         content:
-          "Internal reference for an Electrolux/Frigidaire polymer-tub dishwasher platform built in Kinston, NC. Use it only if it matches the user's product. Do NOT say you have this document; just use its details when relevant:\n\n" +
+          'Internal reference for an Electrolux/Frigidaire polymer-tub dishwasher platform built in Kinston, NC. Use it only if it matches the user\'s product. Do NOT say you have this document; just use its details when relevant:\n\n' +
           extraKnowledge,
       });
     }
 
-    // Then append the existing conversation history (which already includes the latest user message)
+    // Then append the existing (trimmed) conversation history
     messages.push(...history);
 
     const response = await client.chat.completions.create({
       model: 'gpt-4.1-mini',
       messages,
+      max_tokens: MAX_COMPLETION_TOKENS, // cap response length (NEW)
+      // optional: slightly reduce temperature to avoid rambling
+      temperature: 0.6,
     });
 
-    const answer = response.choices[0].message.content;
+    const answer = response.choices[0]?.message?.content || '';
 
     const logEntry = {
       timestamp: new Date().toISOString(),
@@ -547,12 +560,12 @@ app.post('/chat', async (req, res) => {
     console.log('CHAT_LOG', JSON.stringify(logEntry));
 
     // After getting `answer` from OpenAI and logging CHAT_LOG
-logChatTurn({
-  sessionId,
-  userMessage,
-  assistantReply: answer,
-  historyLength: history.length,
-});
+    logChatTurn({
+      sessionId,
+      userMessage,
+      assistantReply: answer,
+      historyLength: history.length,
+    });
 
     res.json({ reply: answer });
   } catch (err) {
