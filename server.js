@@ -283,6 +283,7 @@ CONVERSATION MEMORY
 const knowledge = {
   efPolymerKinston: '',
   electroluxSerials: '',
+  refrigeratorTm: '', // NEW: top-mount refrigerator knowledge
 };
 
 // Load knowledge files at startup
@@ -317,6 +318,22 @@ function loadKnowledge() {
   } catch (err) {
     console.warn(
       'Could not load Electrolux/Frigidaire serial knowledge file:',
+      err.message
+    );
+  }
+
+  // Top-mount refrigerator diagnostics (sections 0–4)
+  try {
+    const fridgePath = path.join(
+      baseDir,
+      'refrigerator',
+      'tm_refrigerator_sections0-4.md'
+    );
+    knowledge.refrigeratorTm = fs.readFileSync(fridgePath, 'utf8');
+    console.log('Loaded top-mount refrigerator knowledge');
+  } catch (err) {
+    console.warn(
+      'Could not load top-mount refrigerator knowledge file:',
       err.message
     );
   }
@@ -371,6 +388,29 @@ function getRelevantKnowledge(userMessage, history) {
       content:
         "Internal reference for an Electrolux/Frigidaire polymer-tub dishwasher platform built in Kinston, NC. " +
         "Use it only if it matches the user's product. Do NOT say you have this document; just use its details when relevant.\n\n" +
+        truncated,
+    });
+  }
+
+  // --- Top-mount refrigerator knowledge ---
+  const mentionsFridge =
+    text.includes('refrigerator') ||
+    text.includes('fridge') ||
+    text.includes('freezer');
+
+  const topMountHints =
+    text.includes('top mount') ||
+    text.includes('top-mount') ||
+    text.includes('top freezer') ||
+    text.includes('freezer on top');
+
+  if (knowledge.refrigeratorTm && mentionsFridge && topMountHints) {
+    const truncated = knowledge.refrigeratorTm.slice(0, MAX_KNOWLEDGE_CHARS);
+    knowledgeMessages.push({
+      role: 'system',
+      content:
+        'Internal reference for diagnosing top-mount refrigerators. ' +
+        'Use it only if it matches the user’s product. Do NOT say you have this document.\n\n' +
         truncated,
     });
   }
