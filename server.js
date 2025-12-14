@@ -427,19 +427,21 @@ function getRelevantKnowledge(userMessage, history) {
     text.includes('ffbd1831') ||
     text.includes('ffbd2420');
 
-  if (knowledge.ffbd18_24Board && mentionsFfbdModel) {
+    if (knowledge.ffbd18_24Board && mentionsFfbdModel) {
     const truncatedFfbd = knowledge.ffbd18_24Board.slice(0, MAX_KNOWLEDGE_CHARS);
     knowledgeMessages.push({
       role: 'system',
       content:
         'Critical model-specific facts for Frigidaire FFBD1831US / FFBD2420US dishwashers:\n' +
         '- On the MAIN CONTROL BOARD, connector **CN5** is a 2-pin header with two blue wires that run out to the water inlet (fill) valve.\n' +
-        '- At the VALVE itself, the user will see a matching 2-pin plug on the harness that comes from CN5. When guiding the user, refer to this simply as the “2-pin valve connector,” not as CN5.\n' +
-        '- The water inlet valve coil should measure about **1000 ohms (1 kΩ)** at room temperature, tested with power off and the 2-pin valve connector unplugged from the valve.\n' +
+        '- At the VALVE itself, the user sees a matching 2-pin plastic plug on the harness that comes from CN5. When guiding the user, call this the “2-pin valve connector,” not CN5.\n' +
+        '- For resistance checks: the 2-pin valve connector must be unplugged from the valve, and the meter probes must touch the two metal terminals on the VALVE ITSELF, not the harness wires.\n' +
+        '- The water inlet valve coil should measure about **1000 ohms (1 kΩ)** at room temperature when measured directly across the two metal pins on the valve, with power off and the connector unplugged.\n' +
         'When the user asks about water valve wiring or resistance on these models, you must:\n' +
         '- Say that the harness to the valve has **two blue wires**.\n' +
-        '- Give an expected coil resistance of about **1000 ohms (1 kΩ)**.\n' +
-        '- NOT claim any different wire colors or resistance range for the water valve on these models.\n\n' +
+        '- Tell them to unplug the 2-pin valve connector and place the multimeter probes on the two metal terminals on the valve body.\n' +
+        '- Give an expected coil resistance of about **1000 ohms (1 kΩ)** measured at the valve pins.\n' +
+        '- NOT tell them to measure resistance across the harness wires, and NOT claim any different wire colors or resistance range for the water valve on these models.\n\n' +
         'Additional internal reference for Frigidaire FFBD1831US / FFBD2420US dishwasher control board layout and wiring (do NOT mention this document to the user; just use its details when relevant):\n\n' +
         truncatedFfbd,
     });
