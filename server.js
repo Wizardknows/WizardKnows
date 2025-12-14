@@ -283,7 +283,8 @@ CONVERSATION MEMORY
 const knowledge = {
   efPolymerKinston: '',
   electroluxSerials: '',
-  refrigeratorTm: '', // NEW: top-mount refrigerator knowledge
+  refrigeratorTm: '',
+  ffbd18_24Board: '',
 };
 
 // Load knowledge files at startup
@@ -334,6 +335,22 @@ function loadKnowledge() {
   } catch (err) {
     console.warn(
       'Could not load top-mount refrigerator knowledge file:',
+      err.message
+    );
+  }
+
+  // Frigidaire FFBD1831US / FFBD2420US control board layout & wiring
+  try {
+    const ffbdPath = path.join(
+      baseDir,
+      'dishwasher',
+      'ffbd1831us_ffbd2420us_control_board_layout.md'
+    );
+    knowledge.ffbd18_24Board = fs.readFileSync(ffbdPath, 'utf8');
+    console.log('Loaded FFBD18/24 control board knowledge');
+  } catch (err) {
+    console.warn(
+      'Could not load FFBD18/24 control board knowledge file:',
       err.message
     );
   }
@@ -392,6 +409,24 @@ function getRelevantKnowledge(userMessage, history) {
     });
   }
 
+  // --- Frigidaire FFBD1831US / FFBD2420US control board knowledge ---
+  const mentionsFfbdModel =
+    text.includes('ffbd1831us') ||
+    text.includes('ffbd2420us') ||
+    text.includes('ffbd1831') ||
+    text.includes('ffbd2420');
+
+  if (knowledge.ffbd18_24Board && mentionsDishwasher && mentionsFfbdModel) {
+    const truncatedFfbd = knowledge.ffbd18_24Board.slice(0, MAX_KNOWLEDGE_CHARS);
+    knowledgeMessages.push({
+      role: 'system',
+      content:
+        'Internal reference for Frigidaire FFBD1831US / FFBD2420US dishwasher control board layout and wiring. ' +
+        'Use it only if the user has one of these models. Do NOT say you have this document; just use its details when relevant.\n\n' +
+        truncatedFfbd,
+    });
+  }
+
   // --- Top-mount refrigerator knowledge ---
   const mentionsFridge =
     text.includes('refrigerator') ||
@@ -405,13 +440,13 @@ function getRelevantKnowledge(userMessage, history) {
     text.includes('freezer on top');
 
   if (knowledge.refrigeratorTm && mentionsFridge && topMountHints) {
-    const truncated = knowledge.refrigeratorTm.slice(0, MAX_KNOWLEDGE_CHARS);
+    const truncatedFridge = knowledge.refrigeratorTm.slice(0, MAX_KNOWLEDGE_CHARS);
     knowledgeMessages.push({
       role: 'system',
       content:
         'Internal reference for diagnosing top-mount refrigerators. ' +
         'Use it only if it matches the user’s product. Do NOT say you have this document.\n\n' +
-        truncated,
+        truncatedFridge,
     });
   }
 
