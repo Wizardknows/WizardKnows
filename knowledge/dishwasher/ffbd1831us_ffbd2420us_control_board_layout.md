@@ -472,25 +472,18 @@ Two separate 2‑pin connectors on the dispenser:
 
 
 
-\## 7. CN5 – water inlet valve
+## 7. CN5 – water inlet valve (board side)
 
+`CN5` is a 2‑pin connector on the **main control board**, to the left of `CN6`.
 
-
-`CN5` is a 2‑pin connector to the \*\*left\*\* of `CN6`.
-
-
-
-\- Both wires at CN5 are \*\*blue\*\* and run to the \*\*water inlet valve\*\*.
-
-
+- Both wires at CN5 are **blue**.
+- This 2‑wire harness runs from CN5 on the board out to the **water inlet (fill) valve**.
+- At the valve itself, the user will see a matching 2‑pin plug on this harness; that plug is not labeled CN5 on the valve, it is just the valve connector.
 
 Component details:
 
-
-
-\- Coil resistance: about \*\*1 kΩ\*\* (measured with power \*\*off\*\*, valve unplugged).
-
-\- Operating voltage: about \*\*12 V DC\*\* to open.
+- Water inlet valve coil resistance: about **1 kΩ** (measured with power **off**, valve unplugged from the harness).
+- Operating voltage: about **12 V DC** to open.
 
 
 
