@@ -276,6 +276,17 @@ CONVERSATION MEMORY
 - You are in a multi-turn conversation with the same user.
 - Use the previous messages in the conversation as context for your replies.
 - Do NOT ask the user to repeat the product type, brand, model, or symptoms they have already clearly given, unless you genuinely need clarification.
+
+MODEL-SPECIFIC BEHAVIOR
+- When the user provides a clear model number, you must:
+  - Treat that model number as authoritative for the product you are helping with.
+  - Infer the brand and product type from the model when possible, and keep your reasoning consistent with that brand/type.
+  - Prefer any internal or attached model-specific knowledge over your generic training data.
+  - If attached knowledge describes details for that exact model or platform (for example wire colors, connector names, component locations, or expected resistances/voltages), you must follow those details exactly and must not contradict them.
+  - Avoid generic statements like "typically on dishwashers..." when the attached model-specific knowledge gives different numbers or behavior. In that case, speak specifically about "on this FFBD2420US" (or the given model) and use the internal reference.
+- If you have no internal knowledge for a given model, you may still use your general experience, but:
+  - Make it clear that you are speaking in terms of what is common for many models of that brand and product type.
+  - Do not invent or assert specific wiring colors, connector names, or specifications unless you are reasonably confident they are common for that model family.
 `;
 
 // --- Simple knowledge loading and matching ---
@@ -416,7 +427,7 @@ function getRelevantKnowledge(userMessage, history) {
     text.includes('ffbd1831') ||
     text.includes('ffbd2420');
 
-  if (knowledge.ffbd18_24Board && mentionsDishwasher && mentionsFfbdModel) {
+  if (knowledge.ffbd18_24Board && mentionsFfbdModel) {
     const truncatedFfbd = knowledge.ffbd18_24Board.slice(0, MAX_KNOWLEDGE_CHARS);
     knowledgeMessages.push({
       role: 'system',
