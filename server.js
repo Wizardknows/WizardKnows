@@ -420,7 +420,7 @@ function getRelevantKnowledge(userMessage, history) {
     });
   }
 
-  // --- Frigidaire FFBD1831US / FFBD2420US control board knowledge ---
+    // --- Frigidaire FFBD1831US / FFBD2420US control board knowledge ---
   const mentionsFfbdModel =
     text.includes('ffbd1831us') ||
     text.includes('ffbd2420us') ||
@@ -432,8 +432,12 @@ function getRelevantKnowledge(userMessage, history) {
     knowledgeMessages.push({
       role: 'system',
       content:
-        'Internal reference for Frigidaire FFBD1831US / FFBD2420US dishwasher control board layout and wiring. ' +
-        'Use it only if the user has one of these models. Do NOT say you have this document; just use its details when relevant.\n\n' +
+        'Critical model-specific facts for Frigidaire FFBD1831US / FFBD2420US dishwashers:\n' +
+        '- The water inlet valve (fill valve) is connected at connector CN5.\n' +
+        '- The CN5 harness is a 2-pin connector with **two blue wires** only (no other colors).\n' +
+        '- The water inlet valve coil measures about **1000 ohms (1 kΩ)** at room temperature, when tested with power off and the connector unplugged.\n' +
+        'You must NOT state any different wire colors or resistance range for the water inlet valve on these models. If the user asks about the valve wiring or resistance, always give these exact values.\n\n' +
+        'Additional internal reference for Frigidaire FFBD1831US / FFBD2420US dishwasher control board layout and wiring (do NOT mention this document to the user; just use its details when relevant):\n\n' +
         truncatedFfbd,
     });
   }
